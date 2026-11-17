@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мамский разговор | Союз женщин России</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comforter+Brush&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fcfaf5;
+            --text-main: #2c3e50;
+            --text-accent: #c49a6c;
+            --text-light: #6b7c8a;
+            --gold-border: #d4af7a;
+            --font-heading: 'Playfair Display', serif;
+            --font-accent: 'Comforter Brush', cursive;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(212, 175, 122, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 122, 0.05) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .logo-text {
+            font-family: var(--font-body);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-accent);
+            margin-bottom: 20px;
+            display: inline-block;
+            border-bottom: 1px solid var(--gold-border);
+            padding-bottom: 5px;
+        }
+
+        .project-label {
+            font-family: var(--font-body);
+            font-size: 16px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-accent);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .project-label::before, .project-label::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 1px;
+            background-color: var(--gold-border);
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 4rem;
+            color: var(--text-main);
+            line-height: 1.1;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-family: var(--font-accent);
+            font-size: 3.5rem;
+            color: var(--text-accent);
+            margin-bottom: 30px;
+            transform: rotate(-2deg);
+        }
+
+        .intro-text {
+            max-width: 700px;
+            margin: 0 auto 40px;
+            font-size: 1.1rem;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        /* Schedule Styles */
+        .schedule {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .event {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 122, 0.3);
+            padding-bottom: 20px;
+            gap: 30px;
+        }
+
+        .event:last-child {
+            border-bottom: none;
+        }
+
+        .event-date {
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+            background-color: #f5efe6;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .event-date .day {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 600;
+            line-height: 1;
+            color: var(--text-accent);
+        }
+
+        .event-date .month {
+            font-size: 0.8rem;
+            text-transform: lowercase;
+            color: var(--text-light);
+        }
+
+        .event-details {
+            flex-grow: 1;
+        }
+
+        .event-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        .event-speaker {
+            font-size: 0.95rem;
+            color: var(--text-accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .event-speaker::before {
+            content: '♀';
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        .event-meta {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Specific adjustments based on image */
+        .event-date.highlight {
+            background-color: var(--text-accent);
+            color: white;
+        }
+        .event-date.highlight .day, .event-date.highlight .month {
+            color: white;
+        }
+
+        /* Info Section */
+        .info-section {
+            background-color: #f9f6f0;
+            border-radius: 20px;
+            padding: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(212, 175, 122, 0.2);
+        }
+
+        .info-left {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .info-right {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .info-heading {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        .info-text {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .info-list li::before {
+            content: '📍';
+            color: var(--text-accent);
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--text-accent);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #b0885a;
+        }
+
+        /* Decorative elements */
+        .heart {
+            color: var(--text-accent);
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            display: block;
+            height: 1px;
+            width: 100px;
+            background-color: var(--gold-border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 2.5rem; }
+            .event {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .event-date {
+                width: 80px;
+                height: 80px;
+            }
+            .event-date .day { font-size: 1.5rem; }
+            .info-section { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo-text">Союз Женщин России</div>
+        <div class="project-label">Проект</div>
+        <h1>Мамский<br>разговор</h1>
+        <div class="subtitle">расписание встреч</div>
+        <p class="intro-text">
+            Иногда нам всем нужен разговор про себя. Про отношения, детей, жизнь, интересы, новые знания и вопросы, которые возникают у каждой из нас. Поэтому "Союз женщин России" запускает проект «Мамский разговор» — каждый вторник мы встречаемся с экспертами и говорим о важном простым и понятным языком.
+        </p>
+    </header>
+
+    <main class="schedule">
+        <!-- 29 сентября -->
+        <div class="event">
+            <div class="event-date">
+                <span class="day">29</span>
+                <span class="month">сентября</span>
+            </div>
+            <div class="event-details">
+                <div class="event-title">«Изнутри наружу: как мы видим себя и как нас видят другие»</div>
+                <div class="event-speaker">Психолог Мария Захарова</div>
+            </div>
+        </div>
+
+        <!-- 29 сентября 18:00 -->
+        <div class="event">
+            <div class="event-date highlight">
+                <span class="day">29</span>
+                <span class="month">сентября</span>
+            </div>
+            <div class="event-details">
+                <div class="event-title">«Создаем художественный рассказ из жизненной ситуации»</div>
+                <div class="event-speaker">Елизавета Блинова, автор блога #ИхняяМать</div>
+                <div class="event-meta">
+                    <span>🕖 18:00</span>
+                    <span>📍 Новая библиотека «КОТ», ул. Авксентьевского, 30</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6 октября -->
+        <div class="event">
+            <div class="event-date">
+                <span class="day">06</span>
+                <span class="month">октября</span>
+            </div>
+            <div class="event-details">
+                <div class="event-title">«Здоровое питание без диет»</div>
+                <div class="event-speaker">Валюженич Марина</div>
+            </div>
+        </div>
+
+        <!-- 13 октября -->
+        <div class="event">
+            <div class="event-date">
+                <span class="day">13</span>
+                <span class="month">октября</span>
+            </div>
+            <div class="event-details">
+                <div class="event-title">«Взросление без лишнего контроля»</div>
+                <div class="event-speaker">Психолог Ольга Задорина</div>
+            </div>
+        </div>
+
+        <!-- 20 октября -->
+        <div class="event">
+            <div class="event-date">
+                <span class="day">20</span>
+                <span class="month">октября</span>
+            </div>
+            <div class="event-details">
+                <div class="event-title">«ИИ для родителей»</div>
+                <div class="event-speaker">Марина Липатникова</div>
+            </div>
+        </div>
+
+        <!-- 27 октября -->
+        <div class="event">
+            <div class="event-date">
+                <span class="day">27</span>
+                <span class="month">октября</span>
+            </div>
+            <div class="event-details">
+                <div class="event-title">«Как подготовить растения к зиме»</div>
+                <div class="event-speaker">Евгения Белова</div>
+            </div>
+        </div>
+
+        <!-- 3 ноября -->
+        <div class="event">
+            <div class="event-date">
+                <span class="day">03</span>
+                <span class="month">ноября</span>
+            </div>
+            <div class="event-details">
+                <div class="event-title">«Здоровая осанка»</div>
+                <div class="event-speaker">Елена Сибирцева</div>
+            </div>
+        </div>
+
+        <!-- 10 ноября -->
+        <div class="event">
+            <div class="event-date">
+                <span class="day">10</span>
+                <span class="month">ноября</span>
+            </div>
+            <div class="event-details">
+                <div class="event-title">«Аура, вайб и ризз: зумерский сленг как мост между родителями и детьми»</div>
+                <div class="event-speaker">Анна Юркова</div>
+            </div>
+        </div>
+    </main>
+
+    <div class="divider">❤</div>
+
+    <section class="info-section">
+        <div class="info-left">
+            <h3 class="info-heading">«Мамский разговор» — каждый вторник в 19:00</h3>
+            <p class="info-text">«Союз женщин России» приглашает на встречу с экспертом.</p>
+            <a href="https://мамскийавтобус.рф" class="btn" target="_blank">Регистрация на сайте мамскийавтобус.рф</a>
+        </div>
+        <div class="info-right">
+            <ul class="info-list">
+                <li>Маршала Конева, 15, 3 этаж</li>
+                <li>Образовательный центр «Брайт»</li>
+                <li>Скоро и в других микрорайонах города</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer style="text-align: center; margin-top: 40px; color: var(--text-light); font-size: 0.9rem;">
+        <p>А ещё «Мамский разговор» скоро появится и в других микрорайонах города. Приходите сами и приглашайте подруг. Будем знакомиться, разговаривать, учиться новому и просто проводить время вместе.</p>
+        <div class="heart">❤</div>
+    </footer>
+</div>
+
+</body>
+</html>

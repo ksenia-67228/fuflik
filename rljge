@@ -1,0 +1,57 @@
+</title>
+<style>
+    .Kartoshka{padding:10px;
+        background-color: blue;
+        color: aqua;
+        background-color: blueviolet;
+    }
+    .pupa{padding: 10px;
+        background-color: black;
+    }
+.yarik {background-color: aqua;
+    width: 50px;
+    height: 70px;
+    border-radius: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.k1 {
+    background-color: rgb(127, 255, 212);
+
+}
+.k2 {
+    background-color: #35b4c5;
+}
+.k3 {
+    background-color: #025a69;
+}
+.k4 {
+    background-color: #012c33;
+}
+.k5 {
+    background-color: rgb(2, 15, 24);
+}
+.danya {
+    
+    flex-direction: row;
+    justify-content: space-between;
+}
+</style>
+
+</head>
+<body>
+    <div class="Kartoshka">pomidor<div class="pupa">pupa</div></div>
+    <div class="danya">
+    
+        <div class="yarik k1">1</div>
+
+        <div class="yarik k2">2</div>
+
+        <div class="yarik k3">3</div>
+
+        <div class="yarik k4">4</div>
+
+        <div class="yarik k5">5</div>
+
+    </div>

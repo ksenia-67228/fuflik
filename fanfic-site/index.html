@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fanfic Haven</title>
+<style>
+  :root{
+    --bg:#14100f;
+    --bg-2:#1e1817;
+    --card:#241d1b;
+    --border:#3a2e2b;
+    --text:#efe6e1;
+    --muted:#a89890;
+    --accent:#e0a46b;
+    --accent-2:#c96f4a;
+    --tag:#3a2e2b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Georgia','Times New Roman',serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+    background-image:radial-gradient(circle at 20% 0%, rgba(224,164,107,.06), transparent 40%);
+  }
+  a{color:var(--accent);text-decoration:none}
+  a:hover{color:var(--accent-2)}
+
+  header{
+    border-bottom:1px solid var(--border);
+    background:rgba(20,16,15,.95);
+    position:sticky;top:0;z-index:100;
+    backdrop-filter:blur(8px);
+  }
+  .nav{
+    max-width:1100px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 24px;gap:20px;flex-wrap:wrap;
+  }
+  .logo{font-size:1.5rem;letter-spacing:1px;font-weight:bold;cursor:pointer}
+  .logo span{color:var(--accent)}
+  nav ul{display:flex;gap:24px;list-style:none}
+  nav a{color:var(--muted);font-size:.95rem;letter-spacing:.5px}
+  nav a:hover{color:var(--accent)}
+
+  #listView{display:block}
+  #readView{display:none}
+
+  .hero{max-width:1100px;margin:0 auto;padding:70px 24px 40px;text-align:center}
+  .hero h1{font-size:2.8rem;margin-bottom:12px;line-height:1.2}
+  .hero h1 em{color:var(--accent);font-style:normal}
+  .hero p{color:var(--muted);max-width:600px;margin:0 auto 28px;font-size:1.05rem}
+
+  .search-wrap{max-width:560px;margin:0 auto}
+  .search-wrap input{
+    width:100%;padding:14px 18px;border-radius:10px;
+    background:var(--bg-2);border:1px solid var(--border);
+    color:var(--text);font-family:inherit;font-size:1rem;outline:none;
+  }
+  .search-wrap input:focus{border-color:var(--accent)}
+
+  .filters{
+    max-width:1100px;margin:36px auto 0;padding:0 24px;
+    display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  }
+  .filters button{
+    background:transparent;border:1px solid var(--border);color:var(--muted);
+    padding:8px 18px;border-radius:20px;font-family:inherit;font-size:.85rem;
+    cursor:pointer;transition:.2s;
+  }
+  .filters button:hover,.filters button.active{
+    border-color:var(--accent);color:var(--accent);background:rgba(224,164,107,.08)
+  }
+
+  .grid{
+    max-width:1100px;margin:40px auto;padding:0 24px;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:24px;
+  }
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:24px;display:flex;flex-direction:column;gap:14px;
+    transition:.25s;position:relative;overflow:hidden;cursor:pointer;
+  }
+  .card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    opacity:0;transition:.25s;
+  }
+  .card:hover{transform:translateY(-4px);border-color:var(--accent)}
+  .card:hover::before{opacity:1}
+  .card h3{font-size:1.25rem;line-height:1.3}
+  .card .fandom{color:var(--accent);font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px}
+  .card .desc{color:var(--muted);font-size:.92rem;flex:1}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{
+    background:var(--tag);color:var(--muted);font-size:.75rem;
+    padding:4px 10px;border-radius:6px;font-family:sans-serif;
+  }
+  .card-footer{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:14px;border-top:1px solid var(--border);
+    font-size:.82rem;color:var(--muted);
+  }
+  .rating{color:var(--accent);letter-spacing:2px}
+
+  .reader{max-width:760px;margin:0 auto;padding:50px 24px 80px}
+  .back-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    background:transparent;border:1px solid var(--border);color:var(--muted);
+    padding:10px 18px;border-radius:10px;font-family:inherit;font-size:.9rem;
+    cursor:pointer;transition:.2s;margin-bottom:32px;
+  }
+  .back-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  .reader h1{font-size:2.4rem;line-height:1.2;margin-bottom:16px}
+  .reader .reader-meta{
+    display:flex;gap:16px;align-items:center;flex-wrap:wrap;
+    padding-bottom:20px;margin-bottom:32px;
+    border-bottom:1px solid var(--border);
+    color:var(--muted);font-size:.9rem;
+  }
+  .reader .reader-meta .fandom{
+    color:var(--accent);text-transform:uppercase;letter-spacing:1.5px;font-size:.8rem;
+  }
+  .reader .reader-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
+  .reader .content{font-size:1.08rem;line-height:1.85;color:#e6dad3}
+  .reader .content p{margin-bottom:1.2em}
+  .reader .content hr{border:none;text-align:center;margin:2em 0;color:var(--muted)}
+  .reader .content hr::before{content:'· · ·';letter-spacing:8px;font-size:1.2rem}
+
+  footer{
+    border-top:1px solid var(--border);margin-top:60px;
+    padding:32px 24px;text-align:center;color:var(--muted);font-size:.85rem;
+  }
+  .empty{
+    grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 0;
+    font-style:italic;
+  }
+
+  @media(max-width:600px){
+    .hero h1{font-size:2rem}
+    .reader h1{font-size:1.7rem}
+    nav ul{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo" onclick="showList()">Fanfic <span>Haven</span></div>
+    <nav>
+      <ul>
+        <li><a href="#" onclick="showList();return false;">Главная</a></li>
+        <li><a href="#" onclick="showList();return false;">Все работы</a></li>
+        <li><a href="#">Обо мне</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div id="listView">
+  <section class="hero">
+    <h1>Мир, где живут <em>мои истории</em></h1>
+    <p>Здесь я выкладываю свои фанфики — от коротких драбблов до многочастных саг.</p>
+    <div class="search-wrap">
+      <input type="text" id="search" placeholder="Поиск по названию или фандому...">
+    </div>
+  </section>
+
+  <div class="filters" id="filters">
+    <button class="active" data-fandom="all">Все</button>
+  </div>
+
+  <main class="grid" id="grid"></main>
+</div>
+
+<div id="readView">
+  <div class="reader">
+    <button class="back-btn" onclick="showList()">← Назад к списку</button>
+    <h1 id="r-title"></h1>
+    <div class="reader-meta">
+      <span class="fandom" id="r-fandom"></span>
+      <span id="r-status"></span>
+      <span class="rating" id="r-rating"></span>
+    </div>
+    <div class="reader-tags" id="r-tags"></div>
+    <div class="content" id="r-content"></div>
+  </div>
+</div>
+
+<footer>
+  © 2025 Fanfic Haven · Сделано с любовью к историям
+</footer>
+
+<script>
+  // ============================================================
+  //  ФАНФИКИ
+  // ============================================================
+  const FICS = [
+    {
+      "title": "Письмо, которое не отправили",
+      "fandom": "Гарри Поттер",
+      "desc": "Спустя годы после войны Гермиона находит в старых вещах письмо, которое так и не решилась отправить. Адресат давно мёртв — или ей так казалось.",
+      "tags": ["драма", "пост-канон", "ангст", "романтика"],
+      "status": "Завершён",
+      "rating": "★★★★★",
+      "content": "Дом на площади Гриммо пах пылью и старыми книгами. Гермиона уже третий час разбирала коробки на чердаке — Кричер давно умер, и разбирать это всё пришлось самой.\n\nВ одной из коробок, под стопкой пожелтевших «Ежедневных пророков», лежал конверт. Простой, без марки, с одним словом на обороте, написанным знакомым до боли почерком.\n\n«Северусу».\n\nОна замерла. Пальцы сами сжали бумагу, будто боялись, что та исчезнет.\n\n***\n\nОна писала это письмо в ночь после битвы. Сидела на полу в гостиной, всё ещё в мантии, перепачканной чужой кровью, и писала. Не для того, чтобы отправить. Просто чтобы выжить.\n\n«Профессор Снейп,\n\nя знаю, что вы мертвы. Я видела, как вы умирали, и ничего не сделала. Я могла бы — я была в двух шагах, у меня была палочка, у меня было время. Я не успела понять.\n\nВы ненавидели меня. Или делали вид. Я так и не разобралась, где заканчивалась маска и начинался человек. Наверное, вы и сами не знали.\n\nНо я хочу, чтобы вы знали: я поняла. Поздно, как всегда, но поняла. Всё, что вы делали — вы делали не ради славы, не ради прощения. Вы делали это, потому что было некому больше.\n\nЯ не знаю, слышите ли вы меня. Наверное, нет.\n\nНо если вдруг — спасибо. И простите.»\n\n***\n\nГермиона перечитала письмо дважды. Потом аккуратно сложила его и убрала во внутренний карман мантии.\n\nОна не сожгла его. И не отправила. Просто оставила при себе — как оставляют вещи, которые не имеют смысла, но без которых уже нельзя.\n\nЧерез неделю она вернулась в Хогвартс. Директор Макгонагалл встретила её у входа и, увидев её лицо, ничего не спросила.\n\n— Мне нужно в подземелья, — сказала Гермиона тихо.\n\n— Кабинет зельеварения теперь занимает профессор Слизнорт, — начала Макгонагалл, но Гермиона покачала головой.\n\n— Не кабинет. Комнаты.\n\nОни шли молча. Портрет Северуса Снейпа висел в галерее директоров — угрюмый, усталый, с плотно сжатыми губами. Он не смотрел на неё, как не смотрел на всех живых.\n\nКогда Гермиона остановилась напротив, он всё-таки поднял глаза.\n\n— Мисс Грейнджер, — сказал он ровно. — Надо полагать, у вас ко мне дело государственной важности. Иначе вы бы не поднимались сюда в такую рань.\n\nОна достала письмо из кармана и положила его на раму портрета.\n\n— Это вам, — сказала она. — Оно опоздало на семь лет.\n\nСнейп долго молчал. Потом — не глядя на письмо — произнёс:\n\n— Уберите. Я не читаю корреспонденцию, которую мне приносят живые.\n\n— Оно не от живых, — тихо ответила Гермиона. — Оно от той меня, которая тогда не успела.\n\nОна развернулась и пошла к выходу. За спиной было тихо. Она не обернулась.\n\nКогда дверь закрылась, Снейп всё-таки посмотрел на конверт. Долго. Потом медленно, очень медленно, протянул руку — насколько позволяла рама — и коснулся пальцами бумаги.\n\nНичего не произошло. Письмо осталось лежать. Портреты не могут читать — это всем известно.\n\nНо если бы кто-то заглянул в галерею в ту минуту, он увидел бы, как человек на портрете закрыл глаза. И как по его лицу — впервые за много лет — прошла тень того, что когда-то было живым."
+    },
+    {
+      "title": "Мальчик, который выжил дважды",
+      "fandom": "Гарри Поттер",
+      "desc": "Альтернативная история: Гарри не отправляют к Дурслям, а оставляют в мире магии. Он растёт другим человеком — и это меняет всё.",
+      "tags": ["AU", "драма", "дружба"],
+      "status": "В процессе",
+      "rating": "★★★★☆",
+      "content": "Гарри Поттер сделал свой первый шаг в доме на площади Гриммо — и это было первое, что в его жизни пошло не так, как ожидалось.\n\nДамблдор долго спорил с Макгонагалл. Она говорила о крови, о защите, о том, что маггловский дом — единственное безопасное место. Он слушал и молчал.\n\nА потом сказал:\n\n— Минерва, у нас есть другой дом. Пустой. И человек, который умеет защищать детей лучше, чем любая кровная магия.\n\n***\n\nГарри рос в тёмном доме, где на стенах висели портреты, которые ворчали, если он бегал по коридорам. Воспитывала его старая ведьма по имени Арабелла Фигг — та самая, что когда-то жила на Тисовой улице и держала полуслепых кошек.\n\nОна не была доброй. Но она была честной. И этого Гарри хватало.\n\n— Ты не особенный, — говорила она ему каждое утро, ставя на стол овсянку. — Ты просто мальчик, который выжил. Это разные вещи.\n\n— А в чём разница? — спрашивал он.\n\n— Особенным быть легко. Это не твоя заслуга. А вот остаться человеком, когда весь мир ждёт от тебя подвига — это уже работа.\n\nГарри не понимал её тогда. Он поймёт позже — в одиннадцать лет, когда получит письмо из Хогвартса и увидит, как весь волшебный мир смотрит на него, как на икону.\n\n***\n\nХогвартс-экспресс был полон. Мальчик с рыжими волосами заглянул в его купе и спросил:\n\n— Тут свободно? Везде занято, а я не хочу сидеть с Малфоем.\n\nГарри кивнул.\n\n— Я Рон. Рон Уизли.\n\n— Гарри Поттер.\n\nРон замер. Потом осторожно сел напротив и сказал:\n\n— Ты не похож на портреты. На портретах у тебя такое лицо, будто ты всё время плачешь.\n\nГарри усмехнулся.\n\n— Может, они просто плохо рисуют.\n\nТак началась дружба, которая — в этом мире, в этой версии истории — оказалась крепче, чем в любой другой."
+    },
+    {
+      "title": "Последний свиток",
+      "fandom": "Наруто",
+      "desc": "Саске находит древний свиток, способный вернуть всё, что он потерял. Но цена окажется выше, чем он готов заплатить.",
+      "tags": ["ангст", "философия", "AU"],
+      "status": "Завершён",
+      "rating": "★★★★★",
+      "content": "Свиток лежал на камне, как будто ждал его. Саске остановился в десяти шагах и долго смотрел, не приближаясь.\n\nОн знал, что внутри. Знал, что написано на выцветшем пергаменте — слова, которые он искал двенадцать лет.\n\n— Если возьмёшь, — сказал голос за спиной, — назад дороги не будет.\n\nСаске не обернулся. Он узнал бы этот голос где угодно.\n\n— Я и так не могу вернуться, — ответил он тихо. — Туда, куда ты меня зовёшь, дороги нет. Но я всё равно пойду.\n\nОн сделал шаг вперёд.\n\n***\n\nУтро было холодным. Наруто стоял у ворот Конохи и смотрел на восток, где вставало солнце.\n\nОн ждал. Он всегда ждал.\n\nИ однажды, может быть, дождётся."
+    },
+    {
+      "title": "Дело о молчащем скрипаче",
+      "fandom": "Шерлок",
+      "desc": "Шерлок берётся за дело музыканта, который перестал играть. Ватсон подозревает, что причина куда страшнее, чем просто творческий кризис.",
+      "tags": ["детектив", "дружба", "дело"],
+      "status": "В процессе",
+      "rating": "★★★★★",
+      "content": "Скрипка лежала на столе, и Шерлок смотрел на неё так, будто она была трупом.\n\n— Он не играет три месяца, — сказал он. — Инструмент в идеальном состоянии. Струны смазаны. Смычок натёрт канифолью. Человек, который бросил музыку, не ухаживает за скрипкой.\n\nВатсон отложил блокнот.\n\n— Может, он просто не может заставить себя?\n\n— Не может — это когда не берёт в руки. А он берёт. Каждый день. И каждый день ставит обратно.\n\nШерлок поднял скрипку и поднёс её к свету.\n\n— Здесь, — сказал он тихо, — на грифе, следы. Он играет, Ватсон. Играет так, чтобы никто не слышал. Значит, он боится не сцены. Он боится того, что услышит сам.\n\n***\n\nКвартира скрипача была на четвёртом этаже. Дверь им открыла женщина с уставшим лицом — жена.\n\n— Он не разговаривает со мной, — сказала она. — С тех пор как умер наш сын, он не сказал мне ни слова. Только играет. По ночам.\n\nШерлок замер.\n\n— Что он играет?\n\nОна подняла глаза.\n\n— Колыбельную. Ту, которую пел сыну перед сном. Каждую ночь одну и ту же. Я думала, он сходит с ума.\n\nШерлок долго молчал. Потом сказал, не поворачиваясь:\n\n— Нет. Он не сходит с ума. Он прощается. Каждую ночь — снова и снова.\n\nОн вышел, не попрощавшись. На лестнице Ватсон догнал его.\n\n— Мы можем что-то сделать?\n\n— Нет, — ответил Шерлок. — Но мы можем не мешать."
+    },
+    {
+      "title": "Город без снов",
+      "fandom": "Ориджинал",
+      "desc": "В городе, где люди перестали видеть сны, молодая художница начинает рисовать то, чего не может быть.",
+      "tags": ["мистика", "сюрреализм", "ориджинал"],
+      "status": "Завершён",
+      "rating": "★★★★☆",
+      "content": "Первое, что исчезло — это сны. Никто не заметил, как это случилось. Просто однажды утром все проснулись и поняли, что ночью ничего не видели.\n\nПросто темнота. Просто пустота.\n\nГород жил дальше, как будто так и должно быть. Люди ходили на работу, пили кофе, смотрели новости. И никто не спрашивал, почему больше не снится ничего.\n\nКроме неё.\n\nОна рисовала. Каждую ночь, вместо сна, она садилась у окна и водила кистью по холсту. И на холсте появлялись города, которых не было. Люди, которых она не знала. Небо, которое никогда не видели над её домом.\n\nОднажды утром она проснулась и поняла, что находится внутри своей картины.\n\n***\n\nУлицы были из краски. Дома — из мазков. Небо — цвета индиго, каким оно бывает только на рассвете, если смотреть на него сквозь закрытые глаза.\n\nОна шла по городу и не чувствовала страха. Только странное, тихое узнавание. Будто всё это она видела раньше — не здесь, не в этой жизни, но где-то.\n\nНа площади стоял человек. Он был нарисован так же, как всё вокруг, — из света и тени, без лица.\n\n— Ты долго, — сказал он.\n\n— Простите, — ответила она. — Я не знала, что меня ждут.\n\n— Тебя всегда ждут, — ответил он. — Просто не все слышат.\n\nОн протянул ей кисть.\n\n— Нарисуй что-нибудь. Что угодно. С этого начнётся твой сон.\n\nИ она поняла — все эти годы она рисовала не потому, что не могла спать. А потому, что строила себе дом, в который однажды сможет вернуться."
+    }
+  ];
+  // ============================================================
+
+  let currentFandom = 'all';
+  const grid = document.getElementById('grid');
+  const searchInput = document.getElementById('search');
+  const filtersBox = document.getElementById('filters');
+  const listView = document.getElementById('listView');
+  const readView = document.getElementById('readView');
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function buildFilters(){
+    const fandoms = [...new Set(FICS.map(f=>f.fandom))];
+    filtersBox.innerHTML = '<button class="active" data-fandom="all">Все</button>' +
+      fandoms.map(f=>`<button data-fandom="${escapeHtml(f)}">${escapeHtml(f)}</button>`).join('');
+  }
+
+  function render(){
+    const q = searchInput.value.toLowerCase().trim();
+    const filtered = FICS.filter(f=>{
+      const matchFandom = currentFandom==='all' || f.fandom===currentFandom;
+      const matchSearch = !q ||
+        f.title.toLowerCase().includes(q) ||
+        f.fandom.toLowerCase().includes(q);
+      return matchFandom && matchSearch;
+    });
+
+    if(!filtered.length){
+      grid.innerHTML = '<div class="empty">Ничего не найдено... но это можно исправить ✍️</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(f=>{
+      const realIndex = FICS.indexOf(f);
+      return `
+        <article class="card" onclick="openFic(${realIndex})">
+          <div class="fandom">${escapeHtml(f.fandom)}</div>
+          <h3>${escapeHtml(f.title)}</h3>
+          <p class="desc">${escapeHtml(f.desc)}</p>
+          <div class="tags">${(f.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+          <div class="card-footer">
+            <span>${escapeHtml(f.status)}</span>
+            <span class="rating">${f.rating||'☆☆☆☆☆'}</span>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  function openFic(index){
+    const f = FICS[index];
+    if(!f) return;
+
+    document.getElementById('r-title').textContent = f.title;
+    document.getElementById('r-fandom').textContent = f.fandom;
+    document.getElementById('r-status').textContent = f.status || '';
+    document.getElementById('r-rating').textContent = f.rating || '';
+    document.getElementById('r-tags').innerHTML = (f.tags||[])
+      .map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('');
+
+    const raw = f.content || f.desc || 'Текст пока не добавлен.';
+    const html = raw.split(/\n\n+/).map(par=>{
+      if(par.trim() === '***' || par.trim() === '---'){
+        return '<hr>';
+      }
+      return `<p>${escapeHtml(par).replace(/\n/g, '<br>')}</p>`;
+    }).join('');
+    document.getElementById('r-content').innerHTML = html;
+
+    listView.style.display = 'none';
+    readView.style.display = 'block';
+    window.scrollTo(0,0);
+    document.title = f.title + ' — Fanfic Haven';
+  }
+
+  function showList(){
+    readView.style.display = 'none';
+    listView.style.display = 'block';
+    window.scrollTo(0,0);
+    document.title = 'Fanfic Haven';
+  }
+
+  searchInput.addEventListener('input', render);
+
+  filtersBox.addEventListener('click', e=>{
+    if(e.target.tagName!=='BUTTON') return;
+    document.querySelectorAll('#filters button').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active');
+    currentFandom = e.target.dataset.fandom;
+    render();
+  });
+
+  buildFilters();
+  render();
+</script>
+</body>
+</html>

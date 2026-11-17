@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мамский Разговор | Уютное пространство</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FDFBF7;
+            --text-main: #4A4A4A;
+            --text-light: #7A7A7A;
+            --pastel-purple: #D8CFF0;
+            --pastel-pink: #F7D4E1;
+            --pastel-green: #D4E8D4;
+            --pastel-yellow: #FDF0C8;
+            --accent-orange: #F5A623;
+            --accent-purple: #9B7EDE;
+            --success-green: #7BC47F;
+            --error-red: #E15554;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: radial-gradient(var(--pastel-pink) 1px, transparent 1px), radial-gradient(var(--pastel-green) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+
+        /* --- ШАПКА --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            gap: 15px;
+        }
+
+        .logo {
+            font-family: 'Comfortaa', cursive;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-purple);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--pastel-purple);
+            color: var(--accent-purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        nav ul { display: flex; list-style: none; gap: 25px; flex-wrap: wrap; }
+        nav a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 700;
+            transition: color 0.3s;
+            font-size: 15px;
+            white-space: nowrap;
+        }
+        nav a:hover { color: var(--accent-purple); }
+
+        .header-buttons { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+
+        .user-greeting {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: var(--accent-purple);
+            font-size: 14px;
+        }
+        .user-greeting.active { display: flex; }
+        
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--pastel-pink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: var(--accent-purple);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: all 0.3s;
+            border: 2px solid var(--pastel-purple);
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .btn-login:hover { background: var(--pastel-purple); color: white; }
+
+        .btn-main {
+            background: var(--accent-orange);
+            color: white;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(245, 166, 35, 0.4); }
+
+        /* --- ГЛАВНЫЙ ЭКРАН --- */
+        .hero {
+            padding: 80px 5% 60px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(216, 207, 240, 0.3) 0%, transparent 100%);
+        }
+        .hero h1 {
+            font-family: 'Comfortaa', cursive;
+            font-size: 48px;
+            color: var(--accent-purple);
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.2;
+        }
+        .hero p {
+            font-size: 18px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            font-weight: 600;
+        }
+
+        /* --- СЕКЦИИ --- */
+        .section { padding: 70px 5%; max-width: 1200px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 50px; }
+        .section-header h2 {
+            font-family: 'Comfortaa', cursive;
+            font-size: 34px;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+        .section-header p { color: var(--text-light); font-size: 16px; font-weight: 600; }
+
+        /* --- БЛОК "О ПРОЕКТЕ" --- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .feature-card {
+            background: white;
+            padding: 35px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-icon {
+            width: 55px; height: 55px;
+            background: var(--pastel-yellow);
+            border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+        .feature-card h3 { font-family: 'Comfortaa', cursive; font-size: 19px; margin-bottom: 10px; color: var(--accent-purple); }
+        .feature-card p { font-size: 15px; color: var(--text-light); }
+
+        /* --- КАРТОЧКИ РАСПИСАНИЯ --- */
+        .schedule-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
+            gap: 30px; 
+        }
+        
+        .schedule-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .schedule-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(155, 126, 222, 0.15); }
+
+        .card-header {
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+            font-size: 15px;
+            color: white;
+        }
+        .schedule-card:nth-child(4n+1) .card-header { background: var(--accent-purple); }
+        .schedule-card:nth-child(4n+2) .card-header { background: #F5A623; }
+        .schedule-card:nth-child(4n+3) .card-header { background: #E88B9F; }
+        .schedule-card:nth-child(4n+4) .card-header { background: #7BC47F; }
+
+        .card-body { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
+        .schedule-card h3 { font-family: 'Comfortaa', cursive; font-size: 18px; margin-bottom: 20px; flex-grow: 1; color: var(--text-main); line-height: 1.4; }
+        
+        .card-info { margin-bottom: 25px; }
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .info-row strong { color: var(--text-main); font-weight: 700; }
+        
+        .speaker-click { cursor: pointer; color: var(--accent-purple); font-weight: 800; text-decoration: underline dashed var(--pastel-purple); text-underline-offset: 4px; transition: color 0.3s; }
+        .speaker-click:hover { color: var(--accent-orange); text-decoration-color: var(--accent-orange); }
+
+        .btn-book {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 2px solid var(--pastel-purple);
+            color: var(--accent-purple);
+            font-weight: 800;
+            font-size: 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: auto;
+        }
+        .btn-book:hover { background: var(--pastel-purple); color: white; }
+        .btn-book.enrolled { background: var(--success-green); border-color: var(--success-green); color: white; cursor: default; }
+
+        /* --- ГДЕ МЫ ВСТРЕЧАЕМСЯ (Две карточки) --- */
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .location-card {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 2px dashed var(--pastel-green);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s;
+        }
+        .location-card:hover { transform: translateY(-5px); }
+        .location-card h3 { font-family: 'Comfortaa', cursive; font-size: 22px; color: var(--accent-purple); margin-bottom: 20px; }
+        .location-info p { font-size: 16px; margin-bottom: 10px; font-weight: 600; }
+        .location-info span { color: var(--text-light); font-weight: 700; }
+        
+        .btn-map {
+            margin-top: 25px;
+            padding: 14px 25px;
+            background: var(--pastel-yellow);
+            color: #8A6D1C;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 800;
+            border-radius: 50px;
+            transition: all 0.3s;
+            display: block;
+        }
+        .btn-map:hover { background: #f5e2a5; transform: scale(1.02); }
+
+        /* --- СПИКЕРЫ --- */
+        .bg-alt { background: #F8F5FF; padding: 70px 5%; }
+        .speakers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+        .speaker-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+        .speaker-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(155, 126, 222, 0.15); }
+        
+        .speaker-img-wrapper {
+            width: 100px; height: 100px;
+            margin: 0 auto 20px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--pastel-pink);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px;
+            border: 3px solid var(--pastel-purple);
+        }
+        .speaker-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .speaker-card h3 { font-family: 'Comfortaa', cursive; font-size: 18px; margin-bottom: 5px; }
+        .speaker-card p { font-size: 14px; color: var(--text-light); font-weight: 600; }
+
+        /* --- ОТЗЫВЫ, ГАЛЕРЕЯ, НОВОСТИ --- */
+        .review-form, .news-form {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #E8E8E8;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 15px;
+            margin-bottom: 15px;
+            background: #FAFAFA;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus { outline: none; border-color: var(--pastel-purple); background: white; }
+        
+        .btn-submit {
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 166, 35, 0.4); }
+
+        .reviews-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
+        .review-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .review-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .review-author { font-weight: 800; font-size: 15px; color: var(--accent-purple); }
+        .review-date { font-size: 12px; color: var(--text-light); font-weight: 600; }
+        .review-stars { color: var(--accent-orange); margin-bottom: 10px; font-size: 16px; }
+        .review-text { font-size: 15px; }
+
+        .news-list { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        .news-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .news-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .news-content { font-size: 15px; margin-bottom: 15px; }
+        .news-img { width: 100%; border-radius: 15px; display: block; }
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .gallery-item { border-radius: 20px; overflow: hidden; cursor: pointer; aspect-ratio: 4/3; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .gallery-item:hover img { transform: scale(1.05); }
+
+        /* --- ОПРОС --- */
+        .poll-box { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; }
+        .poll-item { padding: 15px 20px; border: 2px solid #EEEEEE; border-radius: 15px; margin-bottom: 12px; cursor: pointer; position: relative; overflow: hidden; font-weight: 700; display: flex; justify-content: space-between; transition: all 0.3s; }
+        .poll-item:hover { border-color: var(--pastel-purple); }
+        .poll-item.voted { border-color: var(--accent-purple); background: #F8F5FF; }
+        .poll-bar { position: absolute; top: 0; left: 0; height: 100%; background: var(--pastel-purple); opacity: 0.4; z-index: 0; transition: width 0.5s; }
+        .poll-content { position: relative; z-index: 1; display: flex; justify-content: space-between; width: 100%; }
+
+        /* --- CTA БЛОК --- */
+        .cta-block {
+            background: var(--accent-purple);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            border-radius: 30px;
+            max-width: 1200px;
+            margin: 60px auto;
+        }
+        .cta-block h2 { font-family: 'Comfortaa', cursive; font-size: 32px; margin-bottom: 15px; }
+        .cta-block p { font-size: 16px; margin-bottom: 30px; opacity: 0.9; font-weight: 600; }
+        .btn-cta { background: white; color: var(--accent-purple); padding: 14px 40px; border-radius: 50px; text-decoration: none; font-weight: 800; display: inline-block; transition: transform 0.3s; }
+        .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        footer { text-align: center; padding: 40px; color: var(--text-light); font-size: 14px; font-weight: 600; }
+
+        /* --- МОДАЛЬНЫЕ ОКНА --- */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(74, 74, 74, 0.5); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-box { background: white; border-radius: 30px; padding: 40px; max-width: 450px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); border: 2px solid var(--pastel-purple); animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: var(--text-light); transition: color 0.3s; }
+        .modal-close:hover { color: var(--accent-orange); }
+        .modal-box h2 { font-family: 'Comfortaa', cursive; color: var(--accent-purple); margin-bottom: 10px; text-align: center; font-size: 26px; }
+        .modal-box p.subtitle { text-align: center; color: var(--text-light); margin-bottom: 25px; font-size: 14px; font-weight: 600; }
+
+        /* Формы */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 700; color: var(--text-main); }
+        .form-group input { width: 100%; padding: 12px 16px; border: 2px solid #E8E8E8; border-radius: 15px; font-family: inherit; font-size: 14px; background: #FAFAFA; transition: border-color 0.3s; }
+        .form-group input:focus { outline: none; border-color: var(--pastel-purple); background: white; }
+        .form-group input.error { border-color: var(--error-red); background: #FFF5F5; }
+        .error-msg { color: var(--error-red); font-size: 12px; margin-top: 4px; display: none; font-weight: 600; }
+        .error-msg.show { display: block; }
+        
+        .checkbox-group { display: flex; gap: 10px; margin-bottom: 20px; font-size: 13px; color: var(--text-light); font-weight: 600; }
+        .checkbox-group input { margin-top: 3px; accent-color: var(--accent-purple); width: 16px; height: 16px; }
+        .checkbox-group.error { color: var(--error-red); font-weight: 700; }
+
+        /* Админка */
+        .admin-modal { max-width: 900px; }
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #EEE; padding-bottom: 15px; overflow-x: auto; }
+        .admin-tab { background: none; border: none; font-family: inherit; font-weight: 700; font-size: 14px; color: var(--text-light); cursor: pointer; padding: 8px 15px; border-radius: 10px; transition: all 0.3s; }
+        .admin-tab.active { background: var(--pastel-purple); color: var(--text-main); }
+        .admin-panel { display: none; }
+        .admin-panel.active { display: block; animation: fadeIn 0.3s; }
+        
+        .admin-list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #EEE; border-radius: 15px; margin-bottom: 10px; background: #FAFAFA; }
+        .admin-list-item h4 { font-size: 14px; margin-bottom: 3px; }
+        .admin-list-item p { font-size: 12px; color: var(--text-light); }
+        .btn-mini { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; transition: all 0.3s; }
+        .btn-edit { background: #F0F0FF; color: var(--accent-purple); }
+        .btn-edit:hover { background: var(--accent-purple); color: white; }
+        .btn-del { background: #FFEBEE; color: var(--error-red); }
+        .btn-del:hover { background: var(--error-red); color: white; }
+        
+        .admin-form { background: #F8F5FF; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--pastel-purple); }
+        .admin-form h3 { font-size: 16px; margin-bottom: 15px; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .admin-form input, .admin-form textarea, .admin-form select { width: 100%; padding: 10px; border: 2px solid #E8E8E8; border-radius: 10px; font-family: inherit; font-size: 14px; }
+        .admin-form button { background: var(--accent-purple); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        
+        .file-upload { display: block; padding: 10px; background: white; border: 2px dashed var(--pastel-purple); text-align: center; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--accent-purple); }
+        .file-upload input { display: none; }
+        .img-preview { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: none; margin-top: 5px; }
+
+        /* Лайтбокс */
+        .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .lightbox.active { display: flex; }
+        .lightbox img { max-width: 100%; max-height: 90vh; border-radius: 15px; }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; background: none; border: none; }
+
+        @media (max-width: 768px) {
+            header { flex-wrap: wrap; justify-content: center; gap: 15px; padding: 15px; }
+            nav ul { justify-content: center; }
+            .hero h1 { font-size: 32px; }
+            .section-header h2 { font-size: 28px; }
+            .schedule-grid, .features-grid, .locations-grid { grid-template-columns: 1fr; }
+            .admin-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ШАПКА -->
+    <header>
+        <div class="logo" onclick="secretAdminClick()" id="logoSecret">
+            <div class="logo-icon">🐱</div>
+            Мамский <span>Разговор</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#about">О проекте</a></li>
+                <li><a href="#schedule">Расписание</a></li>
+                <li><a href="#location">Где встречи</a></li>
+                <li><a href="#news">Новости</a></li>
+                <li><a href="#reviews">Отзывы</a></li>
+            </ul>
+        </nav>
+        <div class="header-buttons" id="headerButtons">
+            <button class="btn-login" id="btnLogin" onclick="openModal('authModal')">Войти</button>
+            <button class="btn-main" id="btnRegister" onclick="openModal('authModal')">Регистрация</button>
+            <div class="user-greeting" id="userGreeting">
+                <div class="user-avatar">🌸</div>
+                <span id="userName">Привет!</span>
+                <button class="btn-login" onclick="logout()">Выйти</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <section class="hero">
+        <h1>Пространство поддержки, знаний и живого общения для женщин</h1>
+        <p>Проект «Мамский разговор». Каждый вторник мы встречаемся с экспертами, чтобы обсудить важные темы простым и понятным языком.</p>
+        <a href="#schedule" class="btn-main" style="display: inline-block; padding: 15px 40px; font-size: 16px; text-decoration: none;">Выбрать встречу</a>
+    </section>
+
+    <!-- О ПРОЕКТЕ -->
+    <section id="about" class="section">
+        <div class="section-header">
+            <h2>Что такое «Мамский разговор»</h2>
+            <p>Это пространство поддержки, знаний и живого общения для женщин.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Разговор по душам</h3>
+                <p>Обсуждаем то, что важно: отношения, детей, самооценку, интересы и планы.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎓</div>
+                <h3>Эксперты рядом</h3>
+                <p>Психологи, авторы, специалисты — говорим простым и понятным языком.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Каждый вторник</h3>
+                <p>Регулярные встречи в центре города, в уютной Новой библиотеке «КОТ».</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- РАСПИСАНИЕ -->
+    <section id="schedule" class="section" style="background: #fff; max-width: 100%;">
+        <div class="section-header">
+            <h2>Расписание встреч на осень</h2>
+            <p>Приходите сами и приводите подруг — будет тепло.</p>
+        </div>
+        <div class="schedule-grid" id="scheduleGrid" style="max-width: 1200px; margin: 0 auto;"></div>
+    </section>
+
+    <!-- ГДЕ МЫ ВСТРЕЧАЕМСЯ (ДВЕ КАРТОЧКИ) -->
+    <section id="location" class="section">
+        <div class="section-header">
+            <h2>Где мы встречаемся</h2>
+            <p>Наши встречи проходят на двух уютных площадках города.</p>
+        </div>
+        
+        <div class="locations-grid">
+            <!-- Локация 1 -->
+            <div class="location-card">
+                <div class="location-info">
+                    <h3>Новая библиотека «КОТ»</h3>
+                    <p><span>Адрес:</span> ул. Авксентьевского, 30, Вологда</p>
+                    <p><span>Время:</span> по вторникам, 19:00</p>
+                    <p><span>Вход:</span> свободный</p>
+                </div>
+                <a href="https://yandex.ru/maps/?text=Вологда, улица Авксентьевского, 30" target="_blank" class="btn-map">Открыть на карте →</a>
+            </div>
+
+            <!-- Локация 2 (Новая) -->
+            <div class="location-card">
+                <div class="location-info">
+                    <h3>Образовательный центр «Брайт»</h3>
+                    <p><span>Адрес:</span> ул. Маршала Конева, 15, Вологда</p>
+                    <p><span>Время:</span> по вторникам, 19:00</p>
+                    <p><span>Вход:</span> свободный</p>
+                </div>
+                <a href="https://yandex.ru/maps/?text=Вологда, улица Маршала Конева, 15" target="_blank" class="btn-map">Открыть на карте →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- СПИКЕРЫ -->
+    <section id="speakers" class="bg-alt">
+        <div class="section-header">
+            <h2>Наши спикеры</h2>
+            <p>Нажмите на карточку, чтобы узнать больше</p>
+        </div>
+        <div class="speakers-grid" id="speakersGrid"></div>
+    </section>
+
+    <!-- ОТЗЫВЫ -->
+    <section id="reviews" class="section">
+        <div class="section-header">
+            <h2>Отзывы участниц</h2>
+        </div>
+        <div class="review-form" id="reviewFormCard" style="display: none;">
+            <h3 style="margin-bottom: 15px; font-size: 18px; font-family: 'Comfortaa';">Оставить отзыв</h3>
+            <select id="reviewRating" class="form-control">
+                <option value="5">⭐⭐⭐⭐⭐ Отлично</option>
+                <option value="4">⭐⭐⭐⭐ Хорошо</option>
+                <option value="3">⭐⭐⭐ Нормально</option>
+            </select>
+            <textarea id="reviewText" class="form-control" placeholder="Что вам понравилось?" style="min-height: 100px; resize: vertical;"></textarea>
+            <button class="btn-submit" onclick="addReview()">Отправить отзыв</button>
+        </div>
+        <div id="reviewsList" class="reviews-list"></div>
+    </section>
+
+    <!-- ГАЛЕРЕЯ -->
+    <section id="gallery" class="bg-alt">
+        <div class="section-header">
+            <h2>Как это было</h2>
+            <p>Атмосфера наших встреч</p>
+        </div>
+        <div class="gallery-grid" id="galleryGrid">
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80')"><img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80" alt="Фото"></div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1200&q=80')"><img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=600&q=80" alt="Фото"></div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&q=80')"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80" alt="Фото"></div>
+            <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=1200&q=80')"><img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&q=80" alt="Фото"></div>
+        </div>
+    </section>
+
+    <!-- НОВОСТИ -->
+    <section id="news" class="section">
+        <div class="section-header">
+            <h2>Лента новостей</h2>
+        </div>
+        <div class="news-list">
+            <div class="news-form" id="newsForm" style="display: none;">
+                <h3 style="margin-bottom: 10px; font-size: 16px; font-family: 'Comfortaa';">Что нового?</h3>
+                <textarea id="newsText" class="form-control" placeholder="Текст новости..." style="min-height: 80px;"></textarea>
+                <input type="url" id="newsImage" class="form-control" placeholder="Ссылка на фото (необязательно)">
+                <button class="btn-submit" onclick="addNews()">Опубликовать</button>
+            </div>
+            <div id="newsList"></div>
+        </div>
+    </section>
+
+    <!-- ОПРОС -->
+    <section id="poll" class="bg-alt">
+        <div class="section-header">
+            <h2>Обратная связь</h2>
+            <p>Где проведём следующую встречу?</p>
+        </div>
+        <div class="poll-box" id="pollContainer"></div>
+    </section>
+
+    <!-- CTA БЛОК -->
+    <div style="padding: 0 5%;">
+        <div class="cta-block">
+            <h2>Хотите присоединиться?</h2>
+            <p>Следите за анонсами и новыми встречами в нашей группе.</p>
+            <a href="#" class="btn-cta">Перейти в группу</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© «Мамский разговор» — проект для мам · Вологда</p>
+        <p style="margin-top: 10px;">По вопросам сотрудничества: <a href="#" style="color: var(--accent-purple);">написать в группу</a></p>
+    </footer>
+
+    <!-- МОДАЛЬНЫЕ ОКНА (ПОЛЬЗОВАТЕЛЬСКИЕ) -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('authModal')">&times;</button>
+            <div id="authFormContainer">
+                <h2 id="modalTitle">Регистрация</h2>
+                <p class="subtitle" id="modalSubtitle">Присоединяйтесь к сообществу 💜</p>
+                <form onsubmit="handleAuth(event)">
+                    <div class="form-group" id="nameGroup">
+                        <label>Ваше имя</label>
+                        <input type="text" id="authName" placeholder="Как к вам обращаться?">
+                        <div class="error-msg" id="nameError">Введите имя (мин. 2 символа)</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="authEmail" placeholder="example@mail.ru">
+                        <div class="error-msg" id="emailError">Введите корректный email</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="authPassword" placeholder="Минимум 6 символов">
+                        <div class="error-msg" id="passwordError">Пароль слишком короткий</div>
+                    </div>
+                    <div class="checkbox-group" id="agreeGroup">
+                        <input type="checkbox" id="authAgree">
+                        <label for="authAgree">Я согласна с правилами и политикой конфиденциальности</label>
+                    </div>
+                    <div class="error-msg" id="agreeError" style="margin-top: -15px; margin-bottom: 15px;">Необходимо согласие</div>
+                    <button type="submit" class="btn-submit">Продолжить</button>
+                    <p style="text-align: center; margin-top: 15px; font-size: 13px; font-weight: 600;">
+                        <a href="#" onclick="switchAuthMode(event)" style="color: var(--accent-purple);" id="switchLink">Уже есть аккаунт? Войти</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="speakerModal">
+        <div class="modal-box" style="text-align: center;">
+            <button class="modal-close" onclick="closeModal('speakerModal')">&times;</button>
+            <div id="speakerInfo"></div>
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img id="lightboxImg" src="" alt="Фото">
+    </div>
+
+    <!-- ========== АДМИН-ПАНЕЛЬ ========== -->
+    <div class="modal-overlay" id="adminAuthModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('adminAuthModal')">&times;</button>
+            <h2>Вход в админ-панель</h2>
+            <p class="subtitle">Только для администратора</p>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="adminPass" placeholder="Введите пароль">
+            </div>
+            <button class="btn-submit" onclick="checkAdminPass()">Войти</button>
+        </div>
+    </div>
+
+    <!-- Админ-панель -->
+    <div class="modal-overlay" id="adminPanelModal">
+        <div class="modal-box admin-modal">
+            <button class="modal-close" onclick="closeModal('adminPanelModal')">&times;</button>
+            <h2 style="text-align: left; margin-bottom: 25px;">Админ-панель</h2>
+            
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchAdminTab('events', this)">Мероприятия</button>
+                <button class="admin-tab" onclick="switchAdminTab('speakers', this)">Спикеры</button>
+                <button class="admin-tab" onclick="switchAdminTab('news', this)">Новости</button>
+                <button class="admin-tab" onclick="switchAdminTab('reviews', this)">Отзывы</button>
+                <button class="admin-tab" onclick="switchAdminTab('enrolls', this)">Записи</button>
+            </div>
+
+            <!-- Вкладка: Мероприятия -->
+            <div class="admin-panel active" id="admin-panel-events">
+                <div class="admin-form">
+                    <h3>Добавить мероприятие</h3>
+                    <div class="admin-grid">
+                        <input type="text" id="newEvDate" placeholder="Дата (например: 17 ноября)">
+                        <input type="text" id="newEvTime" placeholder="Время (например: 19:00)">
+                    </div>
+                    <input type="text" id="newEvTopic" placeholder="Тема" style="margin-bottom: 10px;">
+                    <select id="newEvSpeaker" style="margin-bottom: 10px;"></select>
+                    <button onclick="addEvent()">Добавить</button>
+                </div>
+                <div id="adminEventsList"></div>
+            </div>
+
+            <!-- Вкладка: Спикеры -->
+            <div class="admin-panel" id="admin-panel-speakers">
+                <div class="admin-form">
+                    <h3>Добавить спикера</h3>
+                    <input type="text" id="newSpName" placeholder="Имя" style="margin-bottom: 10px;">
+                    <input type="text" id="newSpRole" placeholder="Роль (например: Психолог)" style="margin-bottom: 10px;">
+                    <textarea id="newSpBio" placeholder="Биография" style="min-height: 60px; margin-bottom: 10px;"></textarea>
+                    
+                    <label class="file-upload">
+                        📷 Загрузить фото (или вставьте ссылку ниже)
+                        <input type="file" id="newSpFile" accept="image/*" onchange="previewNewSpeakerImage(this)">
+                    </label>
+                    <input type="url" id="newSpImgUrl" placeholder="Ссылка на фото (URL)" style="margin-bottom: 10px;">
+                    <img id="newSpPreview" class="img-preview" src="" alt="Превью">
+                    
+                    <button onclick="addSpeaker()">Добавить</button>
+                </div>
+                <div id="adminSpeakersList"></div>
+            </div>
+
+            <!-- Вкладка: Новости -->
+            <div class="admin-panel" id="admin-panel-news">
+                <div class="admin-form">
+                    <h3>Добавить новость</h3>
+                    <textarea id="newNewsText" placeholder="Текст новости" style="min-height: 80px; margin-bottom: 10px;"></textarea>
+                    <input type="url" id="newNewsImg" placeholder="Ссылка на фото (необязательно)" style="margin-bottom: 10px;">
+                    <button onclick="adminAddNews()">Опубликовать</button>
+                </div>
+                <div id="adminNewsList"></div>
+            </div>
+
+            <!-- Вкладка: Отзывы -->
+            <div class="admin-panel" id="admin-panel-reviews">
+                <h3 style="margin-bottom: 15px;">Управление отзывами</h3>
+                <div id="adminReviewsList"></div>
+            </div>
+
+            <!-- Вкладка: Записи (ОБНОВЛЕНА) -->
+            <div class="admin-panel" id="admin-panel-enrolls">
+                <h3 style="margin-bottom: 15px;">Кто и куда записался</h3>
+                <div id="adminEnrollsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальные окна ДЛЯ РЕДАКТИРОВАНИЯ -->
+    <div class="modal-overlay" id="editEventModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('editEventModal')">&times;</button>
+            <h2>Редактировать мероприятие</h2>
+            <input type="hidden" id="editEvId">
+            <div class="form-group">
+                <label>Дата</label>
+                <input type="text" id="editEvDate">
+            </div>
+            <div class="form-group">
+                <label>Время</label>
+                <input type="text" id="editEvTime">
+            </div>
+            <div class="form-group">
+                <label>Тема</label>
+                <input type="text" id="editEvTopic">
+            </div>
+            <div class="form-group">
+                <label>Спикер</label>
+                <select id="editEvSpeaker" style="width: 100%; padding: 12px; border: 2px solid #E8E8E8; border-radius: 15px;"></select>
+            </div>
+            <button class="btn-submit" onclick="saveEvent()">Сохранить</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editSpeakerModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('editSpeakerModal')">&times;</button>
+            <h2>Редактировать спикера</h2>
+            <input type="hidden" id="editSpId">
+            <div class="form-group">
+                <label>Имя</label>
+                <input type="text" id="editSpName">
+            </div>
+            <div class="form-group">
+                <label>Роль</label>
+                <input type="text" id="editSpRole">
+            </div>
+            <div class="form-group">
+                <label>Биография</label>
+                <textarea id="editSpBio" style="min-height: 80px; resize: vertical; width: 100%; padding: 12px; border: 2px solid #E8E8E8; border-radius: 15px; font-family: inherit;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Фото (ссылка или загрузка)</label>
+                <label class="file-upload">
+                    📷 Загрузить файл
+                    <input type="file" id="editSpFile" accept="image/*" onchange="previewEditSpeakerImage(this)">
+                </label>
+                <input type="url" id="editSpImgUrl" placeholder="Или вставьте ссылку (URL)">
+                <img id="editSpPreview" class="img-preview" src="" alt="Превью">
+            </div>
+            <button class="btn-submit" onclick="saveSpeaker()">Сохранить</button>
+        </div>
+    </div>
+
+    <script>
+        // ========== ДАННЫЕ ==========
+        const DEFAULT_EVENTS = [
+            { id: 'e1', date: '29 сентября', time: '18:00', topic: '«Изнутри наружу: как мы видим себя и как нас видят другие»', speakerId: 's1' },
+            { id: 'e2', date: '29 сентября', time: '19:00', topic: '«Создаем художественный рассказ из жизненной ситуации»', speakerId: 's2' },
+            { id: 'e3', date: '6 октября', time: '19:00', topic: '«Здоровое питание без диет»', speakerId: 's3' },
+            { id: 'e4', date: '13 октября', time: '19:00', topic: '«Взросление без лишнего контроля»', speakerId: 's4' },
+            { id: 'e5', date: '20 октября', time: '19:00', topic: '«ИИ для родителей»', speakerId: 's5' },
+            { id: 'e6', date: '27 октября', time: '19:00', topic: '«Как подготовить растения к зиме»', speakerId: 's6' },
+            { id: 'e7', date: '3 ноября', time: '19:00', topic: '«Здоровая осанка»', speakerId: 's7' },
+            { id: 'e8', date: '10 ноября', time: '19:00', topic: '«Аура, вайб и ризз: зумерский сленг...»', speakerId: 's8' }
+        ];
+
+        const DEFAULT_SPEAKERS = {
+            's1': { name: 'Мария Захарова', role: 'Психолог', bio: 'Практикующий психолог с 10-летним стажем. Помогает женщинам находить гармонию с собой и выстраивать здоровые отношения.', img: '' },
+            's2': { name: 'Елизавета Блинова', role: 'Автор блога #ИхняяМать', bio: 'Популярный блогер и писательница. Учит превращать повседневные истории в увлекательные рассказы.', img: '' },
+            's3': { name: 'Марина Валюженич', role: 'Нутрициолог', bio: 'Специалист по здоровому питанию. Рассказывает, как питаться вкусно и полезно без жестких ограничений.', img: '' },
+            's4': { name: 'Ольга Задорина', role: 'Психолог', bio: 'Семейный психолог. Помогает родителям пережить подростковый возраст детей с минимальными потерями для нервной системы.', img: '' },
+            's5': { name: 'Марина Липатникова', role: 'IT-специалист', bio: 'Эксперт в области искусственного интеллекта. Объясняет сложные технологии простым языком для родителей.', img: '' },
+            's6': { name: 'Евгения Белова', role: 'Садовод', bio: 'Ландшафтный дизайнер. Научит ухаживать за растениями так, чтобы они радовали глаз круглый год.', img: '' },
+            's7': { name: 'Елена Сибирцева', role: 'Врач ЛФК', bio: 'Специалист по лечебной физкультуре. Расскажет, как сохранить красивую осанку и здоровье спины.', img: '' },
+            's8': { name: 'Анна Юркова', role: 'Лингвист', bio: 'Исследователь современного языка. Поможет найти общий язык с детьми-подростками через их сленг.', img: '' }
+        };
+
+        const POLL_DATA = [
+            { id: 'online', label: '🏠 Онлайн (Zoom)' },
+            { id: 'cafe', label: '☕ Кафе «Ромашка»' },
+            { id: 'center', label: '🏢 Центр «Брайт»' }
+        ];
+
+        // ========== ХРАНИЛИЩЕ ==========
+        const STORAGE = {
+            getUser: () => JSON.parse(localStorage.getItem('mr_user')) || null,
+            setUser: (u) => localStorage.setItem('mr_user', JSON.stringify(u)),
+            removeUser: () => localStorage.removeItem('mr_user'),
+            
+            // Теперь записи хранятся как массив объектов { userName, email, eventId }
+            getEnrolls: () => JSON.parse(localStorage.getItem('mr_enrolls_v2')) || [],
+            setEnrolls: (e) => localStorage.setItem('mr_enrolls_v2', JSON.stringify(e)),
+            
+            getReviews: () => JSON.parse(localStorage.getItem('mr_reviews')) || [],
+            setReviews: (r) => localStorage.setItem('mr_reviews', JSON.stringify(r)),
+            
+            getNews: () => JSON.parse(localStorage.getItem('mr_news')) || [],
+            setNews: (n) => localStorage.setItem('mr_news', JSON.stringify(n)),
+            
+            getPoll: () => JSON.parse(localStorage.getItem('mr_poll')) || {},
+            setPoll: (p) => localStorage.setItem('mr_poll', JSON.stringify(p)),
+
+            getEvents: () => JSON.parse(localStorage.getItem('mr_events')) || DEFAULT_EVENTS,
+            setEvents: (e) => localStorage.setItem('mr_events', JSON.stringify(e)),
+            
+            getSpeakers: () => JSON.parse(localStorage.getItem('mr_speakers')) || DEFAULT_SPEAKERS,
+            setSpeakers: (s) => localStorage.setItem('mr_speakers', JSON.stringify(s)),
+        };
+
+        let EVENTS = STORAGE.getEvents();
+        let SPEAKERS = STORAGE.getSpeakers();
+        let tempNewSpeakerImg = null;
+        let tempEditSpeakerImg = null;
+
+        // ========== ИНИЦИАЛИЗАЦИЯ UI ==========
+        function init() {
+            EVENTS = STORAGE.getEvents();
+            SPEAKERS = STORAGE.getSpeakers();
+            renderUser();
+            renderSchedule();
+            renderSpeakers();
+            renderReviews();
+            renderNews();
+            renderPoll();
+        }
+
+        function renderUser() {
+            const user = STORAGE.getUser();
+            if (user) {
+                document.getElementById('btnLogin').style.display = 'none';
+                document.getElementById('btnRegister').style.display = 'none';
+                document.getElementById('userGreeting').classList.add('active');
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('reviewFormCard').style.display = 'block';
+                document.getElementById('newsForm').style.display = 'block';
+            } else {
+                document.getElementById('btnLogin').style.display = 'inline-block';
+                document.getElementById('btnRegister').style.display = 'inline-block';
+                document.getElementById('userGreeting').classList.remove('active');
+                document.getElementById('reviewFormCard').style.display = 'none';
+                document.getElementById('newsForm').style.display = 'none';
+            }
+        }
+
+        function logout() {
+            if(confirm('Выйти?')) { STORAGE.removeUser(); init(); }
+        }
+
+        // ========== 1. АВТОРИЗАЦИЯ ==========
+        let authMode = 'register';
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            if (id === 'authModal') {
+                document.getElementById('authFormContainer').style.display = 'block';
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function switchAuthMode(e) {
+            if(e) e.preventDefault();
+            authMode = authMode === 'register' ? 'login' : 'register';
+            document.getElementById('modalTitle').textContent = authMode === 'register' ? 'Регистрация' : 'Вход';
+            document.getElementById('modalSubtitle').textContent = authMode === 'register' ? 'Присоединяйтесь 💜' : 'С возвращением!';
+            document.getElementById('switchLink').textContent = authMode === 'register' ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться';
+            document.getElementById('nameGroup').style.display = authMode === 'register' ? 'block' : 'none';
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const name = document.getElementById('authName').value.trim();
+            const email = document.getElementById('authEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('authPassword').value;
+            const agree = document.getElementById('authAgree').checked;
+            
+            let valid = true;
+            if (authMode === 'register' && name.length < 2) { document.getElementById('nameError').classList.add('show'); valid = false; } else { document.getElementById('nameError').classList.remove('show'); }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('emailError').classList.add('show'); valid = false; } else { document.getElementById('emailError').classList.remove('show'); }
+            if (pass.length < 6) { document.getElementById('passwordError').classList.add('show'); valid = false; } else { document.getElementById('passwordError').classList.remove('show'); }
+            if (authMode === 'register' && !agree) { document.getElementById('agreeError').classList.add('show'); valid = false; } else { document.getElementById('agreeError').classList.remove('show'); }
+
+            if (!valid) return;
+
+            STORAGE.setUser({ name: authMode === 'register' ? name : email.split('@')[0], email: email });
+            closeModal('authModal');
+            init();
+            alert(authMode === 'register' ? 'Добро пожаловать!' : 'Вы вошли!');
+        }
+
+        // ========== 2. РАСПИСАНИЕ ==========
+        function renderSchedule() {
+            const grid = document.getElementById('scheduleGrid');
+            const user = STORAGE.getUser();
+            const enrolls = STORAGE.getEnrolls();
+            
+            // Проверка, записан ли текущий юзер на это мероприятие
+            const isEnrolledForUser = (evId) => {
+                if (!user) return false;
+                return enrolls.some(e => e.eventId === evId && e.email === user.email);
+            };
+
+            grid.innerHTML = '';
+
+            EVENTS.forEach(ev => {
+                const speaker = SPEAKERS[ev.speakerId] || { name: 'Спикер', role: '' };
+                const isEnrolled = isEnrolledForUser(ev.id);
+                
+                const div = document.createElement('div');
+                div.className = 'schedule-card';
+                div.innerHTML = `
+                    <div class="card-header">
+                        <span>📅 ${ev.date}</span>
+                        <span>🕕 ${ev.time}</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>${ev.topic}</h3>
+                        <div class="card-info">
+                            <div class="info-row">
+                                <span>🎤</span>
+                                <span class="speaker-click" onclick="showSpeaker('${ev.speakerId}')">${speaker.name}</span>
+                            </div>
+                            <div class="info-row">
+                                <span>📍</span>
+                                <span>центр города</span>
+                            </div>
+                        </div>
+                        <button class="btn-book ${isEnrolled ? 'enrolled' : ''}" onclick="toggleEnroll('${ev.id}', this)">
+                            ${isEnrolled ? '✅ Вы записаны' : 'Записаться'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function toggleEnroll(id, btn) {
+            const user = STORAGE.getUser();
+            if (!user) {
+                alert('Пожалуйста, зарегистрируйтесь для записи!');
+                openModal('authModal');
+                return;
+            }
+
+            let enrolls = STORAGE.getEnrolls();
+            const existingIndex = enrolls.findIndex(e => e.eventId === id && e.email === user.email);
+
+            if (existingIndex !== -1) {
+                // Отменяем запись
+                enrolls.splice(existingIndex, 1);
+                btn.classList.remove('enrolled');
+                btn.textContent = 'Записаться';
+            } else {
+                // Записываем
+                enrolls.push({ 
+                    eventId: id, 
+                    userName: user.name, 
+                    email: user.email, 
+                    date: new Date().toISOString() 
+                });
+                btn.classList.add('enrolled');
+                btn.textContent = '✅ Вы записаны';
+            }
+            STORAGE.setEnrolls(enrolls);
+        }
+
+        // ========== 3. СПИКЕРЫ ==========
+        function renderSpeakers() {
+            const grid = document.getElementById('speakersGrid');
+            grid.innerHTML = '';
+            Object.entries(SPEAKERS).forEach(([id, sp]) => {
+                const div = document.createElement('div');
+                div.className = 'speaker-card';
+                div.onclick = () => showSpeaker(id);
+                
+                let avatarHtml = sp.img 
+                    ? `<img src="${sp.img}" alt="${sp.name}">` 
+                    : `👩‍🏫`;
+
+                div.innerHTML = `
+                    <div class="speaker-img-wrapper">${avatarHtml}</div>
+                    <h3>${sp.name}</h3>
+                    <p>${sp.role}</p>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function showSpeaker(id) {
+            const sp = SPEAKERS[id];
+            if (!sp) return;
+            
+            let avatarHtml = sp.img 
+                ? `<img src="${sp.img}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 20px; border: 4px solid var(--pastel-purple);">` 
+                : `<div style="width: 120px; height: 120px; background: var(--pastel-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px; margin: 0 auto 20px auto;">👩‍🏫</div>`;
+
+            document.getElementById('speakerInfo').innerHTML = `
+                ${avatarHtml}
+                <h2 style="font-family: 'Comfortaa';">${sp.name}</h2>
+                <p style="color: var(--accent-orange); font-weight: 800; margin-bottom: 20px;">${sp.role}</p>
+                <p style="line-height: 1.7; font-weight: 600; color: var(--text-light);">${sp.bio}</p>
+            `;
+            openModal('speakerModal');
+        }
+
+        // ========== 4. ОТЗЫВЫ ==========
+        function addReview() {
+            const user = STORAGE.getUser();
+            if (!user) return;
+            const text = document.getElementById('reviewText').value.trim();
+            const rating = document.getElementById('reviewRating').value;
+            if (!text) return alert('Напишите текст отзыва');
+
+            const reviews = STORAGE.getReviews();
+            reviews.unshift({ id: Date.now(), author: user.name, text, rating, date: new Date().toISOString() });
+            STORAGE.setReviews(reviews);
+            document.getElementById('reviewText').value = '';
+            renderReviews();
+        }
+
+        function renderReviews() {
+            const list = document.getElementById('reviewsList');
+            const reviews = STORAGE.getReviews();
+            list.innerHTML = reviews.length === 0 ? '<p style="text-align:center; color: #aaa; grid-column: 1/-1; font-weight: 600;">Пока нет отзывов.</p>' : '';
+
+            reviews.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'review-card';
+                div.innerHTML = `
+                    <div class="review-top">
+                        <div class="review-author">${r.author}</div>
+                        <div class="review-date">${new Date(r.date).toLocaleDateString('ru-RU')}</div>
+                    </div>
+                    <div class="review-stars">${'⭐'.repeat(r.rating)}</div>
+                    <div class="review-text">${r.text}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // ========== 5. ГАЛЕРЕЯ ==========
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightbox').classList.add('active');
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        // ========== 6. НОВОСТИ ==========
+        function addNews() {
+            const user = STORAGE.getUser();
+            if (!user) return;
+            const text = document.getElementById('newsText').value.trim();
+            const img = document.getElementById('newsImage').value.trim();
+            if (!text && !img) return alert('Добавьте текст или фото');
+
+            const news = STORAGE.getNews();
+            news.unshift({ id: Date.now(), author: user.name, text, img, date: new Date().toISOString() });
+            STORAGE.setNews(news);
+            document.getElementById('newsText').value = '';
+            document.getElementById('newsImage').value = '';
+            renderNews();
+        }
+
+        function renderNews() {
+            const list = document.getElementById('newsList');
+            const news = STORAGE.getNews();
+            list.innerHTML = news.length === 0 ? '<p style="text-align:center; color: #aaa; font-weight: 600;">Пока нет новостей.</p>' : '';
+
+            news.forEach(n => {
+                const div = document.createElement('div');
+                div.className = 'news-card';
+                let media = n.img ? `<img src="${n.img}" class="news-img" onerror="this.style.display='none'">` : '';
+                div.innerHTML = `
+                    <div class="news-header">
+                        <div class="user-avatar" style="width:36px;height:36px;font-size:16px;">🌸</div>
+                        <div>
+                            <div style="font-weight:800; font-size:15px; color:var(--accent-purple);">${n.author}</div>
+                            <div style="font-size:12px; color:#999; font-weight:600;">${new Date(n.date).toLocaleString('ru-RU')}</div>
+                        </div>
+                    </div>
+                    <div class="news-content">${n.text}</div>
+                    ${media}
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // ========== 7. ОПРОС ==========
+        function renderPoll() {
+            const user = STORAGE.getUser();
+            const pollData = STORAGE.getPoll();
+            const container = document.getElementById('pollContainer');
+            
+            const counts = {};
+            POLL_DATA.forEach(p => counts[p.id] = 0);
+            let total = 0;
+            Object.values(pollData).forEach(v => { if(counts[v] !== undefined) counts[v]++; total++; });
+
+            container.innerHTML = '';
+            POLL_DATA.forEach(opt => {
+                const count = counts[opt.id];
+                const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+                const isVoted = user && pollData[user.email] === opt.id;
+
+                const div = document.createElement('div');
+                div.className = 'poll-item' + (isVoted ? ' voted' : '');
+                div.innerHTML = `
+                    <div class="poll-bar" style="width: ${percent}%"></div>
+                    <div class="poll-content">
+                        <span>${opt.label} ${isVoted ? '✓' : ''}</span>
+                        <span>${percent}% (${count})</span>
+                    </div>
+                `;
+                div.onclick = () => votePoll(opt.id);
+                container.appendChild(div);
+            });
+        }
+
+        function votePoll(id) {
+            const user = STORAGE.getUser();
+            if (!user) { alert('Войдите, чтобы проголосовать!'); openModal('authModal'); return; }
+            
+            const pollData = STORAGE.getPoll();
+            if (pollData[user.email] === id) {
+                delete pollData[user.email];
+            } else {
+                pollData[user.email] = id;
+            }
+            STORAGE.setPoll(pollData);
+            renderPoll();
+        }
+
+        // ========== АДМИН-ПАНЕЛЬ ЛОГИКА ==========
+        let secretClicks = 0;
+        let secretTimer;
+
+        function secretAdminClick() {
+            secretClicks++;
+            clearTimeout(secretTimer);
+            secretTimer = setTimeout(() => { secretClicks = 0; }, 1500);
+            if (secretClicks >= 5) {
+                secretClicks = 0;
+                openModal('adminAuthModal');
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.code === 'KeyQ') {
+                e.preventDefault();
+                openModal('adminAuthModal');
+            }
+        });
+
+        function checkAdminPass() {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === 'admin') {
+                closeModal('adminAuthModal');
+                document.getElementById('adminPass').value = '';
+                openModal('adminPanelModal');
+                renderAdminPanel();
+            } else {
+                alert('Неверный пароль!');
+            }
+        }
+
+        function switchAdminTab(tabId, btn) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('admin-panel-' + tabId).classList.add('active');
+        }
+
+        function renderAdminPanel() {
+            // 1. Мероприятия
+            const evList = document.getElementById('adminEventsList');
+            evList.innerHTML = '';
+            EVENTS.forEach(ev => {
+                const div = document.createElement('div');
+                div.className = 'admin-list-item';
+                div.innerHTML = `
+                    <div>
+                        <h4>${ev.date} — ${ev.topic}</h4>
+                        <p>Спикер: ${SPEAKERS[ev.speakerId]?.name || 'Удален'}</p>
+                    </div>
+                    <div class="admin-btn-group">
+                        <button class="btn-mini btn-edit" onclick="openEditEvent('${ev.id}')">Ред.</button>
+                        <button class="btn-mini btn-del" onclick="deleteEvent('${ev.id}')">Удал.</button>
+                    </div>
+                `;
+                evList.appendChild(div);
+            });
+
+            const spSelect = document.getElementById('newEvSpeaker');
+            spSelect.innerHTML = '';
+            Object.entries(SPEAKERS).forEach(([id, sp]) => {
+                spSelect.innerHTML += `<option value="${id}">${sp.name}</option>`;
+            });
+
+            // 2. Спикеры
+            const spList = document.getElementById('adminSpeakersList');
+            spList.innerHTML = '';
+            Object.entries(SPEAKERS).forEach(([id, sp]) => {
+                const div = document.createElement('div');
+                div.className = 'admin-list-item';
+                div.innerHTML = `
+                    <div>
+                        <h4>${sp.name}</h4>
+                        <p>${sp.role}</p>
+                    </div>
+                    <div class="admin-btn-group">
+                        <button class="btn-mini btn-edit" onclick="openEditSpeaker('${id}')">Ред.</button>
+                        <button class="btn-mini btn-del" onclick="deleteSpeaker('${id}')">Удал.</button>
+                    </div>
+                `;
+                spList.appendChild(div);
+            });
+
+            // 3. Новости
+            const newsList = document.getElementById('adminNewsList');
+            newsList.innerHTML = '';
+            const news = STORAGE.getNews();
+            if (news.length === 0) newsList.innerHTML = '<p>Нет новостей.</p>';
+            news.forEach(n => {
+                const div = document.createElement('div');
+                div.className = 'admin-list-item';
+                div.innerHTML = `
+                    <div><h4>${n.text.substring(0, 30)}...</h4></div>
+                    <button class="btn-mini btn-del" onclick="deleteNews(${n.id})">Удал.</button>
+                `;
+                newsList.appendChild(div);
+            });
+
+            // 4. Отзывы
+            const revList = document.getElementById('adminReviewsList');
+            revList.innerHTML = '';
+            const reviews = STORAGE.getReviews();
+            if (reviews.length === 0) revList.innerHTML = '<p>Нет отзывов.</p>';
+            reviews.forEach(r => {
+                const div = document.createElement('div');
+                div.className = 'admin-list-item';
+                div.innerHTML = `
+                    <div><h4>${r.author}</h4><p>${r.text.substring(0, 30)}...</p></div>
+                    <button class="btn-mini btn-del" onclick="deleteReview(${r.id})">Удал.</button>
+                `;
+                revList.appendChild(div);
+            });
+
+            // 5. ЗАПИСИ (ОБНОВЛЕНО: Выводим Имя и Мероприятие)
+            const enrList = document.getElementById('adminEnrollsList');
+            const enrolls = STORAGE.getEnrolls();
+            enrList.innerHTML = enrolls.length === 0 ? '<p>Пока нет записей.</p>' : '';
+            
+            enrolls.forEach(enr => {
+                const ev = EVENTS.find(e => e.id === enr.eventId);
+                const evName = ev ? `${ev.date} — ${ev.topic}` : 'Мероприятие удалено';
+                
+                const div = document.createElement('div');
+                div.className = 'admin-list-item';
+                div.innerHTML = `
+                    <div>
+                        <h4 style="color: var(--accent-purple);">👤 ${enr.userName}</h4>
+                        <p style="margin-top: 4px;">Записался(ась) на: <strong>${evName}</strong></p>
+                        <p style="font-size: 11px; opacity: 0.7;">Email: ${enr.email}</p>
+                    </div>
+                `;
+                enrList.appendChild(div);
+            });
+        }
+
+        // --- ЗАГРУЗКА И ПРЕВЬЮ ФОТО ---
+        function previewNewSpeakerImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempNewSpeakerImg = e.target.result;
+                    const img = document.getElementById('newSpPreview');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewEditSpeakerImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempEditSpeakerImg = e.target.result;
+                    const img = document.getElementById('editSpPreview');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // --- ДОБАВЛЕНИЕ ---
+        function addEvent() {
+            const date = document.getElementById('newEvDate').value.trim();
+            const time = document.getElementById('newEvTime').value.trim();
+            const topic = document.getElementById('newEvTopic').value.trim();
+            const speakerId = document.getElementById('newEvSpeaker').value;
+            if (!date || !time || !topic) return alert('Заполните все поля');
+            
+            EVENTS.push({ id: 'e' + Date.now(), date, time, topic, speakerId });
+            STORAGE.setEvents(EVENTS);
+            document.getElementById('newEvDate').value = '';
+            document.getElementById('newEvTime').value = '';
+            document.getElementById('newEvTopic').value = '';
+            init(); renderAdminPanel();
+        }
+
+        function addSpeaker() {
+            const name = document.getElementById('newSpName').value.trim();
+            const role = document.getElementById('newSpRole').value.trim();
+            const bio = document.getElementById('newSpBio').value.trim();
+            const imgUrl = document.getElementById('newSpImgUrl').value.trim();
+            
+            if (!name || !role) return alert('Заполните имя и роль');
+            
+            const id = 's' + Date.now();
+            const finalImg = tempNewSpeakerImg || imgUrl;
+            
+            SPEAKERS[id] = { name, role, bio, img: finalImg };
+            STORAGE.setSpeakers(SPEAKERS);
+            
+            document.getElementById('newSpName').value = '';
+            document.getElementById('newSpRole').value = '';
+            document.getElementById('newSpBio').value = '';
+            document.getElementById('newSpImgUrl').value = '';
+            document.getElementById('newSpFile').value = '';
+            document.getElementById('newSpPreview').style.display = 'none';
+            tempNewSpeakerImg = null;
+            
+            init(); renderAdminPanel();
+        }
+
+        function adminAddNews() {
+            const text = document.getElementById('newNewsText').value.trim();
+            const img = document.getElementById('newNewsImg').value.trim();
+            if (!text && !img) return alert('Добавьте текст или фото');
+
+            const news = STORAGE.getNews();
+            news.unshift({ id: Date.now(), author: 'Администратор', text, img, date: new Date().toISOString() });
+            STORAGE.setNews(news);
+            document.getElementById('newNewsText').value = '';
+            document.getElementById('newNewsImg').value = '';
+            init(); renderAdminPanel();
+        }
+
+        // --- РЕДАКТИРОВАНИЕ ---
+        function openEditEvent(id) {
+            const ev = EVENTS.find(e => e.id === id);
+            if (!ev) return;
+            document.getElementById('editEvId').value = ev.id;
+            document.getElementById('editEvDate').value = ev.date;
+            document.getElementById('editEvTime').value = ev.time;
+            document.getElementById('editEvTopic').value = ev.topic;
+            
+            const spSelect = document.getElementById('editEvSpeaker');
+            spSelect.innerHTML = '';
+            Object.entries(SPEAKERS).forEach(([sid, sp]) => {
+                spSelect.innerHTML += `<option value="${sid}" ${sid === ev.speakerId ? 'selected' : ''}>${sp.name}</option>`;
+            });
+            openModal('editEventModal');
+        }
+
+        function saveEvent() {
+            const id = document.getElementById('editEvId').value;
+            const index = EVENTS.findIndex(e => e.id === id);
+            if (index === -1) return;
+            
+            EVENTS[index].date = document.getElementById('editEvDate').value;
+            EVENTS[index].time = document.getElementById('editEvTime').value;
+            EVENTS[index].topic = document.getElementById('editEvTopic').value;
+            EVENTS[index].speakerId = document.getElementById('editEvSpeaker').value;
+            
+            STORAGE.setEvents(EVENTS);
+            closeModal('editEventModal');
+            init(); renderAdminPanel();
+        }
+
+        function openEditSpeaker(id) {
+            const sp = SPEAKERS[id];
+            if (!sp) return;
+            document.getElementById('editSpId').value = id;
+            document.getElementById('editSpName').value = sp.name;
+            document.getElementById('editSpRole').value = sp.role;
+            document.getElementById('editSpBio').value = sp.bio;
+            document.getElementById('editSpImgUrl').value = sp.img || '';
+            
+            tempEditSpeakerImg = null;
+            document.getElementById('editSpFile').value = '';
+            const preview = document.getElementById('editSpPreview');
+            if (sp.img) {
+                preview.src = sp.img;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+            
+            openModal('editSpeakerModal');
+        }
+
+        function saveSpeaker() {
+            const id = document.getElementById('editSpId').value;
+            if (!SPEAKERS[id]) return;
+            
+            SPEAKERS[id].name = document.getElementById('editSpName').value;
+            SPEAKERS[id].role = document.getElementById('editSpRole').value;
+            SPEAKERS[id].bio = document.getElementById('editSpBio').value;
+            
+            const imgUrl = document.getElementById('editSpImgUrl').value.trim();
+            SPEAKERS[id].img = tempEditSpeakerImg || imgUrl;
+            
+            STORAGE.setSpeakers(SPEAKERS);
+            closeModal('editSpeakerModal');
+            init(); renderAdminPanel();
+        }
+
+        // --- УДАЛЕНИЕ ---
+        function deleteEvent(id) {
+            if (!confirm('Удалить?')) return;
+            EVENTS = EVENTS.filter(e => e.id !== id);
+            STORAGE.setEvents(EVENTS);
+            init(); renderAdminPanel();
+        }
+
+        function deleteSpeaker(id) {
+            if (!confirm('Удалить?')) return;
+            delete SPEAKERS[id];
+            STORAGE.setSpeakers(SPEAKERS);
+            init(); renderAdminPanel();
+        }
+
+        function deleteReview(id) {
+            if (!confirm('Удалить?')) return;
+            const reviews = STORAGE.getReviews().filter(r => r.id !== id);
+            STORAGE.setReviews(reviews);
+            init(); renderAdminPanel();
+        }
+
+        function deleteNews(id) {
+            if (!confirm('Удалить?')) return;
+            const news = STORAGE.getNews().filter(n => n.id !== id);
+            STORAGE.setNews(news);
+            init(); renderAdminPanel();
+        }
+
+        // ========== ЗАПУСК ==========
+        document.addEventListener('DOMContentLoaded', init);
+
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

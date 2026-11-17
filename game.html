@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Ловля фруктов — Хардкор 🍌</title>
+<style>
+  body {
+    margin: 0;
+    background: linear-gradient(#87CEEB, #E0F6FF);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+  }
+  canvas {
+    background: linear-gradient(#87CEEB, #E0F6FF);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    cursor: none;
+    max-height: 95vh;
+    max-width: 95vw;
+    touch-action: none;
+  }
+  .mute-btn {
+    position: fixed; top: 10px; right: 10px;
+    background: rgba(0,0,0,0.6); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 8px 14px; font-size: 20px;
+    cursor: pointer; z-index: 100;
+    transition: background 0.2s;
+  }
+  .mute-btn:hover { background: rgba(0,0,0,0.8); }
+</style>
+</head>
+<body>
+<canvas id="game" width="800" height="600"></canvas>
+<button class="mute-btn" id="muteBtn" title="Звук вкл/выкл">🔊</button>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = canvas.width;
+const H = canvas.height;
+
+// ==================== АУДИО ====================
+let audioCtx = null;
+let soundEnabled = true;
+
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+document.addEventListener('click', initAudio, { once: true });
+document.addEventListener('keydown', initAudio, { once: true });
+document.addEventListener('touchstart', initAudio, { once: true });
+
+document.getElementById('muteBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  soundEnabled = !soundEnabled;
+  document.getElementById('muteBtn').textContent = soundEnabled ? '🔊' : '🔇';
+});
+
+function playTone(freq, duration, type = 'sine', volume = 0.15, startTime = null, endFreq = null) {
+  if (!soundEnabled) return;
+  if (!audioCtx) initAudio();
+  if (!audioCtx) return;
+  const now = startTime || audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, now);
+  if (endFreq) osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + duration + 0.02);
+}
+
+function playNoise(duration = 0.2, volume = 0.2, filterFreq = 800) {
+  if (!soundEnabled) return;
+  if (!audioCtx) initAudio();
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  const bufferSize = audioCtx.sampleRate * duration;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(filterFreq, now);
+  filter.frequency.exponentialRampToValueAtTime(100, now + duration);
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(volume, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioCtx.destination);
+  source.start(now);
+  source.stop(now + duration + 0.02);
+}
+
+// ==================== ЗВУКИ ====================
+function playBananaSound() {
+  if (!soundEnabled) return;
+  if (!audioCtx) initAudio();
+  if (!audioCtx) return;
+  const notes = [523.25, 659.25, 783.99, 1046.50];
+  const durations = [0.08, 0.08, 0.08, 0.25];
+  let t = audioCtx.currentTime;
+  for (let i = 0; i < notes.length; i++) {
+    playTone(notes[i], durations[i], 'triangle', 0.25, t);
+    t += durations[i];
+  }
+}
+function playCoinSound() { playTone(1200, 0.08, 'sine', 0.08); setTimeout(() => playTone(1800, 0.06, 'sine', 0.06), 40); }
+function playBerrySound() { playTone(1400, 0.06, 'sine', 0.1); setTimeout(() => playTone(1900, 0.08, 'sine', 0.09), 50); }
+function playCherrySound() {
+  playTone(1600, 0.05, 'triangle', 0.1);
+  setTimeout(() => playTone(2000, 0.05, 'triangle', 0.1), 40);
+  setTimeout(() => playTone(2400, 0.08, 'triangle', 0.1), 80);
+}
+function playDiamondSound() {
+  playTone(1046, 0.1, 'sine', 0.15);
+  if (audioCtx) playTone(1568, 0.15, 'sine', 0.12, audioCtx.currentTime + 0.08);
+  if (audioCtx) playTone(2093, 0.25, 'sine', 0.1, audioCtx.currentTime + 0.15);
+}
+function playLifeSound() {
+  playTone(400, 0.12, 'sine', 0.15);
+  setTimeout(() => playTone(600, 0.12, 'sine', 0.15), 80);
+  setTimeout(() => playTone(900, 0.2, 'sine', 0.15), 160);
+}
+function playShieldSound() {
+  playTone(300, 0.15, 'square', 0.12);
+  setTimeout(() => playTone(500, 0.15, 'square', 0.1), 60);
+  setTimeout(() => playTone(800, 0.2, 'square', 0.08), 130);
+}
+function playBombSound() { playNoise(0.4, 0.25, 1000); playTone(80, 0.3, 'sawtooth', 0.2, null, 20); }
+function playLightningSound() { playNoise(0.15, 0.2, 4000); playTone(2000, 0.1, 'square', 0.15, null, 400); }
+function playRockSound() { playNoise(0.3, 0.2, 400); playTone(100, 0.25, 'sawtooth', 0.18, null, 30); }
+function playSkullSound() {
+  playTone(200, 0.3, 'sawtooth', 0.18, null, 80);
+  setTimeout(() => playTone(150, 0.4, 'sawtooth', 0.15, null, 50), 200);
+}
+function playReverseSound() {
+  if (!audioCtx) initAudio();
+  if (!audioCtx || !soundEnabled) return;
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(800, now);
+  osc.frequency.exponentialRampToValueAtTime(200, now + 0.5);
+  gain.gain.setValueAtTime(0.18, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.52);
+}
+function playWaveSound(waveNum) {
+  const baseFreq = 400 + waveNum * 30;
+  playTone(baseFreq, 0.15, 'triangle', 0.15);
+  setTimeout(() => playTone(baseFreq * 1.25, 0.15, 'triangle', 0.15), 150);
+  setTimeout(() => playTone(baseFreq * 1.5, 0.3, 'triangle', 0.15), 300);
+}
+function playGameOverSound() {
+  if (!audioCtx) initAudio();
+  if (!audioCtx || !soundEnabled) return;
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(400, now);
+  osc.frequency.exponentialRampToValueAtTime(60, now + 1.2);
+  gain.gain.setValueAtTime(0.2, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 1.22);
+}
+function playStartSound() {
+  playTone(523, 0.1, 'triangle', 0.15);
+  setTimeout(() => playTone(659, 0.1, 'triangle', 0.15), 100);
+  setTimeout(() => playTone(784, 0.1, 'triangle', 0.15), 200);
+  setTimeout(() => playTone(1046, 0.25, 'triangle', 0.18), 300);
+}
+function playPurchaseSound() {
+  playTone(800, 0.08, 'sine', 0.12);
+  setTimeout(() => playTone(1200, 0.08, 'sine', 0.12), 60);
+  setTimeout(() => playTone(1600, 0.2, 'sine', 0.12), 120);
+}
+function playClickSound() { playTone(600, 0.04, 'square', 0.08); }
+function playErrorSound() { playTone(300, 0.1, 'square', 0.12); setTimeout(() => playTone(200, 0.15, 'square', 0.12), 80); }
+function playBlockSound() { playTone(1500, 0.15, 'sine', 0.15); setTimeout(() => playTone(2000, 0.2, 'sine', 0.12), 80); }
+function playComboSound(count) { playTone(600 + Math.min(count * 100, 1200), 0.08, 'triangle', 0.1); }
+// 🆕 Звук потери жизни (фрукт упал мимо)
+function playMissSound() {
+  playTone(500, 0.1, 'square', 0.1);
+  setTimeout(() => playTone(350, 0.12, 'square', 0.1), 80);
+  setTimeout(() => playTone(200, 0.15, 'square', 0.12), 160);
+}
+
+// ==================== СОСТОЯНИЕ ====================
+let state = 'menu';
+let coins = 0;
+let lives = 3;
+let maxLives = 5;
+let fruits = [];
+let particles = [];
+let floatingTexts = [];
+let lightningBolts = [];
+let spawnTimer = 0;
+let spawnInterval = 60;
+
+let shieldTimer = 0;
+let comboCount = 0;
+let comboTimer = 0;
+
+let wave = 1;
+let waveTimer = 0;
+let waveDuration = 60 * 30;
+let waveMessage = '';
+let waveMessageTimer = 0;
+let difficulty = 1;
+
+// ==================== КУРСОР ====================
+let mouseX = null, mouseY = null;
+let cursorHover = false;
+let cursorRippleTimer = 0;
+let cursorRippleX = 0, cursorRippleY = 0;
+let isTouch = false;
+
+// ==================== КОРЗИНЫ — БОЛЬШЕ ВЫБОРА! ====================
+const basketTypes = [
+  { id: 'wood', name: 'Деревянная', emoji: '🧺', price: 0,
+    w: 140, h: 70, speed: 10, luck: 1.0,
+    desc: 'Стандарт', color: '#8B4513', color2: '#5C2E0E', rim: '#A0522D' },
+  { id: 'iron', name: 'Железная', emoji: '🪣', price: 50,
+    w: 160, h: 72, speed: 12, luck: 1.15,
+    desc: 'Шире и быстрее', color: '#708090', color2: '#404850', rim: '#95A5A6' },
+  { id: 'bronze', name: 'Бронзовая', emoji: '🏺', price: 100,
+    w: 170, h: 75, speed: 13, luck: 1.25,
+    desc: 'Крепкая бронза', color: '#CD7F32', color2: '#8B5A2B', rim: '#E8A87C' },
+  { id: 'silver', name: 'Серебряная', emoji: '⚱️', price: 180,
+    w: 175, h: 76, speed: 14, luck: 1.3,
+    desc: 'Блестящая', color: '#C0C0C0', color2: '#808080', rim: '#E8E8E8' },
+  { id: 'gold', name: 'Золотая', emoji: '🏆', price: 280,
+    w: 180, h: 78, speed: 15, luck: 1.4,
+    desc: 'Больше и быстрее', color: '#DAA520', color2: '#8B6914', rim: '#FFD700' },
+  { id: 'emerald', name: 'Изумрудная', emoji: '💚', price: 400,
+    w: 190, h: 80, speed: 16, luck: 1.5,
+    desc: 'Магическая', color: '#2ECC71', color2: '#1B8A4F', rim: '#7DFFB0' },
+  { id: 'ruby', name: 'Рубиновая', emoji: '❤️‍🔥', price: 550,
+    w: 200, h: 82, speed: 17, luck: 1.6,
+    desc: 'Огненная', color: '#E74C3C', color2: '#8B1A0F', rim: '#FF7B6B' },
+  { id: 'diamond', name: 'Алмазная', emoji: '💎', price: 800,
+    w: 210, h: 85, speed: 18, luck: 1.75,
+    desc: 'Максимальная мощь', color: '#00CED1', color2: '#006064', rim: '#40E0D0' },
+  { id: 'rainbow', name: 'Радужная', emoji: '🌈', price: 1200,
+    w: 230, h: 90, speed: 20, luck: 2.0,
+    desc: 'ЛЕГЕНДАРНАЯ!', color: '#9B59B6', color2: '#5B2C6F', rim: '#FFD700', rainbow: true }
+];
+
+let currentBasketId = 'wood';
+let ownedBaskets = ['wood'];
+let basket = { w: 140, h: 70, x: W/2 - 70, y: H - 90, speed: 10 };
+
+function applyBasket(id) {
+  const b = basketTypes.find(b => b.id === id);
+  if (!b) return;
+  basket.w = b.w;
+  basket.h = b.h;
+  basket.speed = b.speed;
+  basket.x = Math.max(0, Math.min(W - basket.w, basket.x));
+  basket.y = H - b.h - 20;
+  currentBasketId = id;
+}
+
+// ==================== ТИПЫ ====================
+const fruitTypes = [
+  { emoji: '🍎', points: 1, size: 45, weight: 10, cat: 'fruit' },
+  { emoji: '🍊', points: 1, size: 45, weight: 10, cat: 'fruit' },
+  { emoji: '🍋', points: 1, size: 45, weight: 10, cat: 'fruit' },
+  { emoji: '🍇', points: 2, size: 45, weight: 7,  cat: 'berry' },
+  { emoji: '🍓', points: 2, size: 45, weight: 7,  cat: 'berry' },
+  { emoji: '🍒', points: 3, size: 45, weight: 4,  cat: 'cherry' },
+  { emoji: '🍌', points: 2, size: 48, weight: 6,  cat: 'banana' },
+  { emoji: '🍉', points: 3, size: 50, weight: 4,  cat: 'cherry' },
+
+  { emoji: '💎', points: 5, size: 40, weight: 2, cat: 'diamond' },
+
+  { emoji: '🥗', points: 2, size: 48, weight: 5, cat: 'food',
+    effect: 'life', color: '#2ecc71' },
+  { emoji: '🍰', points: 8, size: 48, weight: 2, cat: 'food',
+    effect: 'life', color: '#e91e63' },
+  { emoji: '🍎', points: 2, size: 48, weight: 4, cat: 'food',
+    effect: 'life', color: '#e74c3c' },
+
+  { emoji: '🛡️', points: 3, size: 45, weight: 3, cat: 'food',
+    effect: 'shield', color: '#3498db' },
+
+  { emoji: '💣', points: 0, size: 45, weight: 6, cat: 'bomb' },
+  { emoji: '⚡', points: 0, size: 48, weight: 4, cat: 'lightning' },
+  { emoji: '🪨', points: 0, size: 52, weight: 3, cat: 'heavy' },
+  { emoji: '☠️', points: 0, size: 45, weight: 2, cat: 'skull' },
+  { emoji: '🌀', points: 0, size: 48, weight: 2, cat: 'reverse' }
+];
+
+// ==================== СОХРАНЕНИЕ ====================
+function save() {
+  try { localStorage.setItem('fruitGame', JSON.stringify({ coins, ownedBaskets, currentBasketId })); } catch (e) {}
+}
+function load() {
+  try {
+    const data = JSON.parse(localStorage.getItem('fruitGame'));
+    if (data) {
+      coins = data.coins || 0;
+      ownedBaskets = data.ownedBaskets || ['wood'];
+      currentBasketId = data.currentBasketId || 'wood';
+      applyBasket(currentBasketId);
+    }
+  } catch (e) {}
+}
+load();
+
+// ==================== УПРАВЛЕНИЕ ====================
+let keys = {};
+let controlReversed = false;
+let reverseTimer = 0;
+
+document.addEventListener('keydown', e => {
+  keys[e.key] = true;
+  if (state === 'playing' && e.key === 'Escape') state = 'menu';
+  else if (state === 'menu') {
+    if (e.key === 'Enter' || e.key === ' ') startGame();
+    if (['s','S','ы','Ы'].includes(e.key)) { playClickSound(); state = 'shop'; }
+  } else if (state === 'shop') {
+    if (e.key === 'Escape' || e.key === 'Enter') { playClickSound(); state = 'menu'; }
+  } else if (state === 'gameover') {
+    if (e.key === ' ') startGame();
+    if (e.key === 'Escape') { playClickSound(); state = 'menu'; }
+  }
+  if ([' ', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) e.preventDefault();
+});
+document.addEventListener('keyup', e => keys[e.key] = false);
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  mouseX = (e.clientX - rect.left) * (W / rect.width);
+  mouseY = (e.clientY - rect.top) * (H / rect.height);
+  isTouch = false;
+});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  mouseX = (e.touches[0].clientX - rect.left) * (W / rect.width);
+  mouseY = (e.touches[0].clientY - rect.top) * (H / rect.height);
+  isTouch = true;
+}, { passive: false });
+
+canvas.addEventListener('mouseleave', () => { if (!isTouch) { mouseX = null; mouseY = null; } });
+
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.clientX - rect.left) * (W / rect.width);
+  const my = (e.clientY - rect.top) * (H / rect.height);
+  triggerCursorRipple(mx, my);
+  handleClick(mx, my);
+});
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const mx = (e.touches[0].clientX - rect.left) * (W / rect.width);
+  const my = (e.touches[0].clientY - rect.top) * (H / rect.height);
+  mouseX = mx; mouseY = my; isTouch = true;
+  triggerCursorRipple(mx, my);
+  handleClick(mx, my);
+}, { passive: false });
+
+// Колесо мыши для скролла магазина
+let shopScroll = 0;
+canvas.addEventListener('wheel', e => {
+  if (state === 'shop') {
+    e.preventDefault();
+    shopScroll += e.deltaY * 0.5;
+  }
+}, { passive: false });
+
+function triggerCursorRipple(x, y) { cursorRippleTimer = 15; cursorRippleX = x; cursorRippleY = y; }
+
+let menuButtons = [];
+let shopButtons = [];
+
+function handleClick(x, y) {
+  if (state === 'menu') {
+    for (const b of menuButtons)
+      if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { playClickSound(); return b.action(); }
+  } else if (state === 'shop') {
+    for (const b of shopButtons)
+      if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) return b.action();
+    if (x >= 15 && x <= 135 && y >= H - 65 && y <= H - 20) { playClickSound(); state = 'menu'; }
+  } else if (state === 'gameover') {
+    if (x >= W/2 - 120 && x <= W/2 + 120 && y >= H/2 + 80 && y <= H/2 + 130) { playClickSound(); startGame(); }
+    if (x >= W/2 - 120 && x <= W/2 + 120 && y >= H/2 + 145 && y <= H/2 + 195) { playClickSound(); state = 'menu'; }
+  } else if (state === 'playing') {
+    if (x >= W - 65 && x <= W - 15 && y >= 10 && y <= 50) { playClickSound(); state = 'menu'; }
+  }
+}
+
+// ==================== СТАРТ ====================
+function startGame() {
+  state = 'playing';
+  fruits = []; particles = []; floatingTexts = []; lightningBolts = [];
+  spawnTimer = 0; spawnInterval = 60;
+  lives = 3; maxLives = 5;
+  shieldTimer = 0; comboCount = 0; comboTimer = 0;
+  wave = 1; waveTimer = 0;
+  waveMessage = 'ВОЛНА 1'; waveMessageTimer = 90;
+  difficulty = 1;
+  controlReversed = false; reverseTimer = 0;
+  applyBasket(currentBasketId);
+  basket.x = W/2 - basket.w/2;
+  initAudio();
+  playStartSound();
+}
+
+function nextWave() {
+  wave++;
+  waveTimer = 0;
+  difficulty = 1 + (wave - 1) * 0.35;
+  if (wave === 2) waveMessage = 'ВОЛНА 2 — БУДЬ ВНИМАТЕЛЬНЕЕ';
+  else if (wave === 3) waveMessage = 'ВОЛНА 3 — МОЛНИИ!';
+  else if (wave === 4) waveMessage = 'ВОЛНА 4 — КАМНИ!';
+  else if (wave === 5) waveMessage = 'ВОЛНА 5 — ЧЕРЕПА!';
+  else if (wave === 6) waveMessage = 'ВОЛНА 6 — ВИХРИ!';
+  else waveMessage = 'ВОЛНА ' + wave + ' — ХАРДКОР!';
+  waveMessageTimer = 90;
+  playWaveSound(wave);
+  const bonus = wave * 5;
+  coins += bonus;
+  addFloatingText(W/2, H/2, '+' + bonus + ' 🪙 бонус', '#FFD700');
+  if (lives < maxLives) lives++;
+}
+
+function pickFruit() {
+  const bType = basketTypes.find(b => b.id === currentBasketId);
+  const luck = bType ? bType.luck : 1;
+  const weighted = fruitTypes.map(f => {
+    let w = f.weight;
+    if (f.cat === 'lightning' && wave < 3) w = 0;
+    if (f.cat === 'heavy' && wave < 4) w = 0;
+    if (f.cat === 'skull' && wave < 5) w = 0;
+    if (f.cat === 'reverse' && wave < 6) w = 0;
+    if (['bomb', 'lightning', 'heavy', 'skull', 'reverse'].includes(f.cat)) w *= difficulty * 0.9;
+    if (f.cat === 'diamond' || f.cat === 'food') w *= (0.7 + luck * 0.3);
+    return { ...f, w };
+  });
+  const total = weighted.reduce((s, f) => s + f.w, 0);
+  let r = Math.random() * total;
+  for (const f of weighted) { r -= f.w; if (r <= 0) return f; }
+  return weighted.find(f => f.w > 0) || weighted[0];
+}
+
+function spawnFruit() {
+  const type = pickFruit();
+  if (!type) return;
+  const baseSpeed = 2.5 + Math.random() * 2 + (coins * 0.0015) + difficulty * 0.7;
+  fruits.push({
+    x: Math.random() * (W - 70) + 35,
+    y: -60,
+    vy: baseSpeed, baseVy: baseSpeed,
+    type, rotation: 0,
+    vrot: (Math.random() - 0.5) * 0.1,
+    vx: type.cat === 'reverse' ? (Math.random() - 0.5) * 3 : 0
+  });
+}
+
+// ==================== КУРСОР ====================
+function drawCursor() {
+  if (mouseX === null || mouseY === null) return;
+  const x = mouseX, y = mouseY;
+  cursorHover = false;
+  if (state === 'menu') {
+    for (const b of menuButtons) if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { cursorHover = true; break; }
+  } else if (state === 'shop') {
+    for (const b of shopButtons) if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { cursorHover = true; break; }
+    if (x >= 15 && x <= 135 && y >= H - 65 && y <= H - 20) cursorHover = true;
+  } else if (state === 'gameover') {
+    if ((x >= W/2 - 120 && x <= W/2 + 120 && y >= H/2 + 80 && y <= H/2 + 130) ||
+        (x >= W/2 - 120 && x <= W/2 + 120 && y >= H/2 + 145 && y <= H/2 + 195)) cursorHover = true;
+  } else if (state === 'playing') {
+    if (x >= W - 65 && x <= W - 15 && y >= 10 && y <= 50) cursorHover = true;
+  }
+
+  if (cursorRippleTimer > 0) {
+    const t = 1 - cursorRippleTimer / 15;
+    ctx.save();
+    ctx.globalAlpha = 1 - t;
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(cursorRippleX, cursorRippleY, 8 + t * 30, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = 'rgba(52, 152, 219, 0.6)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(cursorRippleX, cursorRippleY, 5 + t * 20, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }
+
+  if (isTouch) {
+    ctx.save();
+    ctx.globalAlpha = 0.6;
+    ctx.fillStyle = cursorHover ? '#f39c12' : '#fff';
+    ctx.strokeStyle = '#2c3e50'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(x, y, cursorHover ? 18 : 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.globalAlpha = 0.9; ctx.fillStyle = '#2c3e50';
+    ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    return;
+  }
+
+  ctx.save();
+  ctx.shadowColor = cursorHover ? '#f39c12' : '#3498db';
+  ctx.shadowBlur = cursorHover ? 20 : 12;
+  ctx.fillStyle = '#fff'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(x, y, cursorHover ? 12 : 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = cursorHover ? '#f39c12' : '#3498db';
+  ctx.beginPath(); ctx.arc(x, y, cursorHover ? 8 : 5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(x, y, cursorHover ? 3 : 2, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = cursorHover ? '#f39c12' : '#3498db'; ctx.lineWidth = 2; ctx.globalAlpha = 0.7;
+  const armLen = cursorHover ? 20 : 15;
+  const innerGap = cursorHover ? 14 : 11;
+  ctx.beginPath(); ctx.moveTo(x, y - innerGap); ctx.lineTo(x, y - armLen); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x, y + innerGap); ctx.lineTo(x, y + armLen); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x - innerGap, y); ctx.lineTo(x - armLen, y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + innerGap, y); ctx.lineTo(x + armLen, y); ctx.stroke();
+  ctx.restore();
+}
+
+// ==================== КОРЗИНА ====================
+function drawBasketShape() {
+  const bt = basketTypes.find(b => b.id === currentBasketId);
+  
+  // Радужная корзина — перелив цвета
+  let fillColor = bt.color;
+  let rimColor = bt.rim;
+  if (bt.rainbow) {
+    const hue = (Date.now() / 20) % 360;
+    fillColor = `hsl(${hue}, 70%, 55%)`;
+    rimColor = `hsl(${(hue + 180) % 360}, 90%, 65%)`;
+  }
+  
+  ctx.fillStyle = fillColor;
+  ctx.beginPath();
+  ctx.moveTo(basket.x, basket.y);
+  ctx.lineTo(basket.x + basket.w, basket.y);
+  ctx.lineTo(basket.x + basket.w - 12, basket.y + basket.h);
+  ctx.lineTo(basket.x + 12, basket.y + basket.h);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = bt.color2;
+  ctx.lineWidth = 2.5;
+  for (let i = 1; i < 4; i++) {
+    const y = basket.y + (basket.h / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(basket.x + (12 / 4) * i, y);
+    ctx.lineTo(basket.x + basket.w - (12 / 4) * i, y);
+    ctx.stroke();
+  }
+  for (let i = 1; i < 7; i++) {
+    const x = basket.x + (basket.w / 7) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, basket.y);
+    ctx.lineTo(x - 6, basket.y + basket.h);
+    ctx.stroke();
+  }
+  ctx.fillStyle = rimColor;
+  ctx.fillRect(basket.x, basket.y, basket.w, 10);
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.fillRect(basket.x + 5, basket.y + 2, basket.w - 10, 4);
+
+  if (shieldTimer > 0) {
+    ctx.strokeStyle = 'rgba(52, 152, 219, ' + (0.6 + Math.sin(Date.now()/100) * 0.3) + ')';
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.arc(basket.x + basket.w/2, basket.y + basket.h/2, basket.w * 0.7, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+}
+
+function drawHUD() {
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = 'bold 24px Arial';
+  ctx.fillStyle = '#000';
+  ctx.fillText('🪙 ' + coins, 18, 38);
+
+  ctx.font = 'bold 18px Arial';
+  ctx.fillStyle = '#8e44ad';
+  ctx.fillText('🌊 Волна ' + wave, 18, 64);
+
+  const progress = waveTimer / waveDuration;
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.fillRect(18, 72, 140, 7);
+  ctx.fillStyle = '#8e44ad';
+  ctx.fillRect(18, 72, 140 * progress, 7);
+
+  ctx.textAlign = 'right';
+  ctx.font = 'bold 26px Arial';
+  let hearts = '';
+  for (let i = 0; i < lives; i++) hearts += '❤️';
+  ctx.fillText(hearts, W - 75, 38);
+
+  const hoveringPause = mouseX !== null && mouseY !== null &&
+    mouseX >= W - 65 && mouseX <= W - 15 && mouseY >= 10 && mouseY <= 50;
+  ctx.fillStyle = hoveringPause ? 'rgba(243, 156, 18, 0.7)' : 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.roundRect(W - 60, 12, 45, 38, 8);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('❚❚', W - 37, 38);
+
+  ctx.textAlign = 'left';
+  ctx.font = 'bold 16px Arial';
+  let by = 100;
+  if (shieldTimer > 0) { ctx.fillStyle = '#3498db'; ctx.fillText('🛡️ ' + Math.ceil(shieldTimer / 60) + 'с', 18, by); by += 22; }
+  if (controlReversed) { ctx.fillStyle = '#9b59b6'; ctx.fillText('🌀 ' + Math.ceil(reverseTimer / 60) + 'с', 18, by); by += 22; }
+
+  if (comboCount > 1) {
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 24px Arial';
+    ctx.fillStyle = '#f39c12';
+    ctx.fillText('🔥 x' + comboCount + ' КОМБО', W/2, 110);
+  }
+
+  if (waveMessageTimer > 0) {
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, waveMessageTimer / 30);
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 40px Arial';
+    ctx.fillStyle = '#8e44ad';
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 6;
+    ctx.strokeText(waveMessage, W/2, H/2 - 100);
+    ctx.fillText(waveMessage, W/2, H/2 - 100);
+    ctx.restore();
+  }
+}
+
+function addParticles(x, y, color, count) {
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 6,
+      vy: (Math.random() - 0.5) * 6 - 2,
+      life: 30, maxLife: 30,
+      color, size: 2 + Math.random() * 3
+    });
+  }
+}
+
+function addFloatingText(x, y, text, color) {
+  floatingTexts.push({ x, y, text, color, life: 60, maxLife: 60, vy: -1.5 });
+}
+
+function checkCollision(fruit) {
+  const fx = fruit.x;
+  const fy = fruit.y + fruit.type.size / 2;
+  return fx > basket.x - 5 && fx < basket.x + basket.w + 5 &&
+         fy > basket.y - 5 && fy < basket.y + basket.h + 5;
+}
+
+function applyFoodEffect(f) {
+  const type = f.type;
+  if (type.effect === 'life') {
+    if (lives < maxLives) lives++;
+    addFloatingText(f.x, f.y, '+1 ❤️', '#2ecc71');
+    addParticles(f.x, f.y, '#2ecc71', 15);
+    playLifeSound();
+  } else if (type.effect === 'shield') {
+    shieldTimer = 60 * 10;
+    addFloatingText(f.x, f.y, '🛡️ ЩИТ!', '#3498db');
+    addParticles(f.x, f.y, '#3498db', 20);
+    playShieldSound();
+  }
+}
+
+// 🆕 Проверка: фрукт упал мимо корзины
+function handleMiss(f) {
+  const cat = f.type.cat;
+  const isHazard = ['bomb', 'lightning', 'heavy', 'skull', 'reverse'].includes(cat);
+  
+  // Опасности, пролетевшие мимо — не наносят урона (хорошо)
+  if (isHazard) return;
+  
+  // 🍌 Банан упал мимо — потеря жизни + звук
+  if (cat === 'banana') {
+    if (shieldTimer > 0) {
+      shieldTimer = 0;
+      addFloatingText(f.x, H - 100, '🛡️ -1 🍌', '#3498db');
+      playBlockSound();
+      return;
+    }
+    lives--;
+    comboCount = 0;
+    addFloatingText(f.x, H - 100, '🍌 -1 ❤️', '#e74c3c');
+    playMissSound();
+    if (lives <= 0) { state = 'gameover'; save(); playGameOverSound(); }
+    return;
+  }
+  
+  // 💎 Алмаз упал — тоже потеря жизни (он ценнее)
+  if (cat === 'diamond') {
+    if (shieldTimer > 0) {
+      shieldTimer = 0;
+      addFloatingText(f.x, H - 100, '🛡️ -1 💎', '#3498db');
+      playBlockSound();
+      return;
+    }
+    lives--;
+    comboCount = 0;
+    addFloatingText(f.x, H - 100, '💎 -1 ❤️', '#e74c3c');
+    playMissSound();
+    if (lives <= 0) { state = 'gameover'; save(); playGameOverSound(); }
+    return;
+  }
+  
+  // Обычные фрукты — теперь тоже ТЕРЯЕШЬ ЖИЗНЬ!
+  if (shieldTimer > 0) {
+    shieldTimer = 0;
+    addFloatingText(f.x, H - 100, '🛡️ -1 🍎', '#3498db');
+    playBlockSound();
+    return;
+  }
+  lives--;
+  comboCount = 0;
+  addFloatingText(f.x, H - 100, f.type.emoji + ' -1 ❤️', '#e74c3c');
+  playMissSound();
+  if (lives <= 0) { state = 'gameover'; save(); playGameOverSound(); }
+}
+
+function update() {
+  if (cursorRippleTimer > 0) cursorRippleTimer--;
+  if (state !== 'playing') return;
+
+  if (shieldTimer > 0) shieldTimer--;
+  if (reverseTimer > 0) { reverseTimer--; if (reverseTimer <= 0) controlReversed = false; }
+  if (waveMessageTimer > 0) waveMessageTimer--;
+  if (comboTimer > 0) { comboTimer--; if (comboTimer <= 0) comboCount = 0; }
+
+  waveTimer++;
+  if (waveTimer >= waveDuration) nextWave();
+
+  let left = keys['ArrowLeft'] || keys['a'] || keys['ф'];
+  let right = keys['ArrowRight'] || keys['d'] || keys['в'];
+  if (controlReversed) [left, right] = [right, left];
+
+  if (mouseX !== null) {
+    let targetX = mouseX - basket.w/2;
+    if (controlReversed) targetX = W - mouseX - basket.w/2;
+    const lerp = isTouch ? 0.3 : 0.2;
+    basket.x += (targetX - basket.x) * lerp;
+    basket.x = Math.max(0, Math.min(W - basket.w, basket.x));
+  }
+  if (left) basket.x = Math.max(0, basket.x - basket.speed);
+  if (right) basket.x = Math.min(W - basket.w, basket.x + basket.speed);
+
+  spawnTimer++;
+  const currentSpawnInterval = Math.max(15, spawnInterval / difficulty);
+  if (spawnTimer >= currentSpawnInterval) { spawnTimer = 0; spawnFruit(); }
+
+  for (let i = fruits.length - 1; i >= 0; i--) {
+    const f = fruits[i];
+    const cat = f.type.cat;
+    const isHazard = ['bomb', 'lightning', 'heavy', 'skull', 'reverse'].includes(cat);
+
+    f.y += f.baseVy;
+    if (f.vx) f.x += f.vx;
+    if (f.x < 25 || f.x > W - 25) f.vx = -f.vx;
+    f.rotation += f.vrot;
+
+    if (checkCollision(f)) {
+      if (cat === 'bomb' || cat === 'skull' || cat === 'heavy') {
+        if (shieldTimer > 0) {
+          shieldTimer = 0;
+          addFloatingText(f.x, f.y, '🛡️ Заблокировано!', '#3498db');
+          addParticles(f.x, f.y, '#3498db', 25);
+          playBlockSound();
+        } else {
+          const dmg = cat === 'skull' ? 2 : 1;
+          lives -= dmg;
+          addParticles(f.x, f.y, '#ff0000', 20);
+          addFloatingText(f.x, f.y, '-' + dmg + ' ❤️', '#e74c3c');
+          comboCount = 0;
+          if (cat === 'bomb') playBombSound();
+          else if (cat === 'skull') playSkullSound();
+          else if (cat === 'heavy') playRockSound();
+          if (lives <= 0) { state = 'gameover'; save(); playGameOverSound(); }
+        }
+      } else if (cat === 'lightning') {
+        if (shieldTimer > 0) {
+          shieldTimer = 0;
+          addFloatingText(f.x, f.y, '🛡️ Заблокировано!', '#3498db');
+          playBlockSound();
+        } else {
+          lives--;
+          lightningBolts.push({ x: f.x, life: 30, maxLife: 30 });
+          addParticles(f.x, f.y, '#f1c40f', 25);
+          addFloatingText(f.x, f.y, '⚡ -1 ❤️', '#f1c40f');
+          comboCount = 0;
+          playLightningSound();
+          if (lives <= 0) { state = 'gameover'; save(); playGameOverSound(); }
+        }
+      } else if (cat === 'reverse') {
+        if (shieldTimer > 0) {
+          shieldTimer = 0;
+          addFloatingText(f.x, f.y, '🛡️ Заблокировано!', '#3498db');
+          playBlockSound();
+        } else {
+          controlReversed = true;
+          reverseTimer = 60 * 5;
+          addFloatingText(f.x, f.y, '🌀 УПРАВЛЕНИЕ ИНВЕРТИРОВАНО!', '#9b59b6');
+          addParticles(f.x, f.y, '#9b59b6', 25);
+          playReverseSound();
+        }
+      } else if (cat === 'banana') {
+        let pts = f.type.points;
+        if (comboCount > 1) pts = Math.floor(pts * (1 + comboCount * 0.1));
+        coins += pts;
+        playBananaSound();
+        addParticles(f.x, f.y, '#FFE135', 20);
+        addFloatingText(f.x, f.y - 15, '🍌 БАНАНЧИКИ! +' + pts, '#FFE135');
+        comboCount++;
+        comboTimer = 60 * 2;
+      } else if (cat === 'food') {
+        let pts = f.type.points;
+        coins += pts;
+        applyFoodEffect(f);
+        addFloatingText(f.x, f.y - 20, '+' + pts + ' 🪙', '#e67e22');
+        comboCount++;
+        comboTimer = 60 * 2;
+      } else {
+        let pts = f.type.points;
+        if (comboCount > 1) pts = Math.floor(pts * (1 + comboCount * 0.1));
+        coins += pts;
+        const color = cat === 'diamond' ? '#00CED1' : '#FFD700';
+        addParticles(f.x, f.y, color, 8);
+        addFloatingText(f.x, f.y - 15, '+' + pts, color);
+        if (cat === 'diamond') playDiamondSound();
+        else if (cat === 'berry') playBerrySound();
+        else if (cat === 'cherry') playCherrySound();
+        else playCoinSound();
+        comboCount++;
+        comboTimer = 60 * 2;
+        if (comboCount > 2) playComboSound(comboCount);
+      }
+      fruits.splice(i, 1);
+    } else if (f.y > H + 60) {
+      // 🆕 ФРУКТ УПАЛ МИМО — ТЕРЯЕШЬ ЖИЗНЬ!
+      handleMiss(f);
+      fruits.splice(i, 1);
+    }
+  }
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life--;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+  for (let i = floatingTexts.length - 1; i >= 0; i--) {
+    const t = floatingTexts[i]; t.y += t.vy; t.life--;
+    if (t.life <= 0) floatingTexts.splice(i, 1);
+  }
+  for (let i = lightningBolts.length - 1; i >= 0; i--) {
+    lightningBolts[i].life--;
+    if (lightningBolts[i].life <= 0) lightningBolts.splice(i, 1);
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  if (state === 'playing') {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (const f of fruits) {
+      const cat = f.type.cat;
+      if (cat === 'food' && f.type.color) {
+        ctx.save();
+        ctx.globalAlpha = 0.3 + Math.sin(Date.now() / 200) * 0.2;
+        ctx.fillStyle = f.type.color;
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.type.size * 0.8, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+      if (cat === 'banana') {
+        ctx.save();
+        ctx.globalAlpha = 0.35 + Math.sin(Date.now() / 150) * 0.2;
+        ctx.fillStyle = '#FFE135';
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.type.size * 0.85, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+      if (['bomb', 'lightning', 'heavy', 'skull'].includes(cat)) {
+        ctx.save();
+        ctx.globalAlpha = 0.2 + Math.sin(Date.now() / 150) * 0.15;
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.type.size * 0.75, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+      if (cat === 'reverse') {
+        ctx.save();
+        ctx.globalAlpha = 0.25 + Math.sin(Date.now() / 200) * 0.2;
+        ctx.fillStyle = '#9b59b6';
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.type.size * 0.8, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+      ctx.save();
+      ctx.translate(f.x, f.y);
+      ctx.rotate(f.rotation);
+      ctx.font = f.type.size + 'px Arial';
+      ctx.fillText(f.type.emoji, 0, 0);
+      ctx.restore();
+    }
+
+    for (const lb of lightningBolts) {
+      ctx.save();
+      ctx.globalAlpha = lb.life / lb.maxLife;
+      ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 5;
+      ctx.shadowColor = '#f1c40f'; ctx.shadowBlur = 20;
+      ctx.beginPath(); ctx.moveTo(lb.x, 0); ctx.lineTo(lb.x, H); ctx.stroke();
+      ctx.restore();
+    }
+
+    for (const p of particles) {
+      ctx.globalAlpha = p.life / p.maxLife;
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const t of floatingTexts) {
+      ctx.globalAlpha = t.life / t.maxLife;
+      ctx.fillStyle = t.color;
+      ctx.font = 'bold 22px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(t.text, t.x, t.y);
+    }
+    ctx.globalAlpha = 1;
+
+    drawBasketShape();
+    drawHUD();
+  } else if (state === 'menu') drawMenu();
+  else if (state === 'shop') drawShop();
+  else if (state === 'gameover') drawGameOver();
+
+  drawCursor();
+}
+
+// ==================== МЕНЮ ====================
+function drawMenu() {
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#2c3e50';
+  ctx.font = 'bold 52px Arial';
+  ctx.fillText('🍎 Ловля 🍌', W/2, 100);
+  ctx.font = '20px Arial';
+  ctx.fillStyle = '#34495e';
+  ctx.fillText('фруктов — ХАРДКОР 🔊', W/2, 130);
+
+  ctx.font = 'bold 30px Arial';
+  ctx.fillStyle = '#B8860B';
+  ctx.fillText('🪙 ' + coins, W/2, 180);
+
+  menuButtons = [];
+  const buttons = [
+    { text: '▶ Играть', y: 210, color: '#27ae60', action: startGame },
+    { text: '🛒 Магазин (' + basketTypes.length + ' корзин)', y: 285, color: '#2980b9', action: () => state = 'shop' }
+  ];
+
+  for (const b of buttons) {
+    const bw = 360, bh = 60;
+    const bx = W/2 - bw/2;
+    const hovering = mouseX !== null && mouseY !== null &&
+      mouseX >= bx && mouseX <= bx + bw && mouseY >= b.y && mouseY <= b.y + bh;
+
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    roundRect(bx, b.y + 4, bw, bh, 14); ctx.fill();
+    ctx.fillStyle = b.color;
+    roundRect(bx, b.y, bw, bh, 14); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    roundRect(bx + 5, b.y + 5, bw - 10, bh/2 - 5, 10); ctx.fill();
+    if (hovering) {
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+      roundRect(bx, b.y, bw, bh, 14); ctx.stroke();
+    }
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 26px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.text, W/2, b.y + bh/2 + 2);
+    ctx.textBaseline = 'alphabetic';
+    menuButtons.push({ x: bx, y: b.y, w: bw, h: bh, action: b.action });
+  }
+
+  // 🔴 ВАЖНОЕ ПРЕДУПРЕЖДЕНИЕ
+  ctx.fillStyle = 'rgba(231, 76, 60, 0.9)';
+  roundRect(60, 365, W - 120, 60, 12); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 20px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('⚠️ ВАЖНО: Если фрукт упал МИМО — теряешь жизнь!', W/2, 392);
+  ctx.font = '16px Arial';
+  ctx.fillText('🍎🍊🍋🍇🍓🍒🍌🍉💎 — все они должны быть в корзине!', W/2, 414);
+
+  // Легенда
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  roundRect(60, 440, W - 120, 130, 14); ctx.fill();
+  ctx.strokeStyle = '#bdc3c7'; ctx.lineWidth = 2;
+  roundRect(60, 440, W - 120, 130, 14); ctx.stroke();
+
+  ctx.fillStyle = '#e74c3c';
+  ctx.font = 'bold 15px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('⚠️ ОПАСНОСТИ (не лови):', 80, 465);
+  ctx.font = '13px Arial';
+  ctx.fillStyle = '#34495e';
+  ctx.fillText('💣 -1❤️  ⚡ -1❤️  🪨 -1❤️  ☠️ -2❤️  🌀 инверсия', 80, 488);
+
+  ctx.fillStyle = '#27ae60';
+  ctx.font = 'bold 15px Arial';
+  ctx.fillText('✨ БОНУСЫ (лови!):', 80, 515);
+  ctx.font = '13px Arial';
+  ctx.fillStyle = '#34495e';
+  ctx.fillText('🥗 +1❤️  🍰 +1❤️  🛡️ щит  💎 5🪙  🍌 БАНАНЧИКИ!', 80, 538);
+
+  ctx.fillStyle = '#7f8c8d';
+  ctx.font = '12px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Мышь / ← →  •  Enter — играть  •  S — магазин', W/2, H - 15);
+}
+
+// ==================== МАГАЗИН (со скроллом, 9 корзин) ====================
+function drawShop() {
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = '#2c3e50';
+  ctx.font = 'bold 40px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('🛒 Магазин', W/2, 50);
+
+  ctx.font = 'bold 24px Arial';
+  ctx.fillStyle = '#B8860B';
+  ctx.fillText('🪙 ' + coins + '   •   Корзин: ' + ownedBaskets.length + '/' + basketTypes.length, W/2, 82);
+
+  shopButtons = [];
+
+  // Область прокрутки
+  const areaTop = 100;
+  const areaBottom = H - 70;
+  const areaHeight = areaBottom - areaTop;
+  const cardW = W - 100;
+  const cardH = 90;
+  const gap = 10;
+  const totalHeight = basketTypes.length * (cardH + gap);
+  const maxScroll = Math.max(0, totalHeight - areaHeight);
+  shopScroll = Math.max(0, Math.min(maxScroll, shopScroll));
+
+  // Обрезаем область
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(50, areaTop, cardW + 50, areaHeight);
+  ctx.clip();
+
+  for (let i = 0; i < basketTypes.length; i++) {
+    const b = basketTypes[i];
+    const y = areaTop + i * (cardH + gap) - shopScroll;
+    const x = 50;
+
+    // Пропускаем, если карточка вне области
+    if (y + cardH < areaTop - 20 || y > areaBottom + 20) {
+      // Всё равно добавляем кнопку в список (но не отрисовываем)
+      continue;
+    }
+
+    const owned = ownedBaskets.includes(b.id);
+    const equipped = currentBasketId === b.id;
+    const canAfford = coins >= b.price;
+
+    // Радужная карточка
+    if (b.rainbow) {
+      const hue = (Date.now() / 30) % 360;
+      ctx.fillStyle = `hsla(${hue}, 70%, 60%, 0.3)`;
+    } else if (equipped) ctx.fillStyle = 'rgba(39, 174, 96, 0.25)';
+    else if (owned) ctx.fillStyle = 'rgba(52, 152, 219, 0.15)';
+    else ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    roundRect(x, y, cardW, cardH, 12); ctx.fill();
+
+    // Рамка
+    if (b.rainbow) {
+      const hue = (Date.now() / 30) % 360;
+      ctx.strokeStyle = `hsl(${hue}, 90%, 50%)`;
+      ctx.lineWidth = 3;
+    } else {
+      ctx.strokeStyle = equipped ? '#27ae60' : (owned ? '#3498db' : '#bdc3c7');
+      ctx.lineWidth = equipped ? 3 : 1.5;
+    }
+    roundRect(x, y, cardW, cardH, 12); ctx.stroke();
+
+    // Иконка
+    ctx.font = '46px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#000';
+    ctx.fillText(b.emoji, x + 50, y + cardH/2);
+
+    // Название
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = 'bold 20px Arial';
+    ctx.fillStyle = '#2c3e50';
+    ctx.fillText(b.name, x + 100, y + 28);
+
+    // Характеристики
+    ctx.font = '14px Arial';
+    ctx.fillStyle = '#7f8c8d';
+    ctx.fillText(b.desc, x + 100, y + 50);
+    ctx.fillText('Ширина: ' + b.w + '  •  Скорость: ' + b.speed, x + 100, y + 68);
+    ctx.fillText('Удача: ×' + b.luck.toFixed(2), x + 100, y + 86);
+
+    // Кнопка
+    const btnX = x + cardW - 150;
+    const btnY = y + cardH/2 - 20;
+    const btnW = 130;
+    const btnH = 40;
+
+    let btnText, btnColor, action;
+    if (equipped) { btnText = '✓ Выбрано'; btnColor = '#27ae60'; action = null; }
+    else if (owned) {
+      btnText = 'Выбрать'; btnColor = '#3498db';
+      action = () => { applyBasket(b.id); save(); playClickSound(); };
+    } else if (canAfford) {
+      btnText = '🪙 ' + b.price; btnColor = '#e67e22';
+      action = () => { coins -= b.price; ownedBaskets.push(b.id); applyBasket(b.id); save(); playPurchaseSound(); };
+    } else {
+      btnText = '🔒 ' + b.price; btnColor = '#95a5a6';
+      action = () => { playErrorSound(); };
+    }
+
+    const hoveringBtn = mouseX !== null && mouseY !== null &&
+      mouseX >= btnX && mouseX <= btnX + btnW &&
+      mouseY >= btnY && mouseY <= btnY + btnH && action;
+
+    ctx.fillStyle = hoveringBtn ? '#f39c12' : btnColor;
+    roundRect(btnX, btnY, btnW, btnH, 8); ctx.fill();
+    if (hoveringBtn) {
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5;
+      roundRect(btnX, btnY, btnW, btnH, 8); ctx.stroke();
+    }
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 15px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(btnText, btnX + btnW/2, btnY + btnH/2 + 1);
+
+    if (action) shopButtons.push({ x: btnX, y: btnY, w: btnW, h: btnH, action });
+  }
+
+  ctx.restore();
+
+  // Скроллбар справа (если нужно)
+  if (maxScroll > 0) {
+    const barX = W - 35;
+    const barY = areaTop;
+    const barH = areaHeight;
+    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+    ctx.fillRect(barX, barY, 8, barH);
+    const thumbH = Math.max(30, barH * (areaHeight / totalHeight));
+    const thumbY = barY + (barH - thumbH) * (shopScroll / maxScroll);
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    roundRect(barX, thumbY, 8, thumbH, 4); ctx.fill();
+
+    ctx.fillStyle = '#7f8c8d';
+    ctx.font = '11px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('↕ колесо', W - 31, areaBottom + 15);
+  }
+
+  // Кнопка "Назад"
+  const backY = H - 60;
+  const hoveringBack = mouseX !== null && mouseY !== null &&
+    mouseX >= 15 && mouseX <= 135 && mouseY >= backY && mouseY <= backY + 42;
+
+  ctx.fillStyle = hoveringBack ? '#5D6D7E' : '#34495e';
+  roundRect(15, backY, 120, 42, 10); ctx.fill();
+  if (hoveringBack) {
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+    roundRect(15, backY, 120, 42, 10); ctx.stroke();
+  }
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 18px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('← Назад', 75, backY + 22);
+
+  ctx.fillStyle = '#7f8c8d';
+  ctx.font = '14px Arial';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('Escape — назад', W - 25, H - 30);
+}
+
+function drawGameOver() {
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = 'bold 52px Arial';
+  ctx.fillText('Игра окончена!', W/2, H/2 - 100);
+
+  ctx.font = 'bold 30px Arial';
+  ctx.fillStyle = '#8e44ad';
+  ctx.fillText('🌊 Дошёл до волны ' + wave, W/2, H/2 - 50);
+
+  ctx.font = 'bold 36px Arial';
+  ctx.fillStyle = '#FFD700';
+  ctx.fillText('🪙 ' + coins, W/2, H/2);
+
+  ctx.font = '18px Arial';
+  ctx.fillStyle = '#ddd';
+  ctx.fillText('Монеты сохранены!', W/2, H/2 + 32);
+
+  const btnW = 240, btnH = 50;
+  const buttons = [
+    { text: '▶ Ещё раз', y: H/2 + 80, color: '#27ae60' },
+    { text: '🏠 Меню', y: H/2 + 145, color: '#34495e' }
+  ];
+
+  for (const b of buttons) {
+    const hovering = mouseX !== null && mouseY !== null &&
+      mouseX >= W/2 - btnW/2 && mouseX <= W/2 + btnW/2 &&
+      mouseY >= b.y && mouseY <= b.y + btnH;
+
+    ctx.fillStyle = b.color;
+    roundRect(W/2 - btnW/2, b.y, btnW, btnH, 12); ctx.fill();
+    if (hovering) {
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+      roundRect(W/2 - btnW/2, b.y, btnW, btnH, 12); ctx.stroke();
+    }
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 22px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(b.text, W/2, b.y + btnH/2 + 1);
+    ctx.textBaseline = 'alphabetic';
+  }
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+applyBasket(currentBasketId);
+loop();
+</script>
+</body>
+</html>
